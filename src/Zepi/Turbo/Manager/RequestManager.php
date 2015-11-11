@@ -134,7 +134,7 @@ class RequestManager
      * Builds the html request object
      * 
      * @access protected
-     * @return \Zepi\Turbo\Request\HtmlRequest
+     * @return \Zepi\Turbo\Request\WebRequest
      */
     protected function _buildWebRequest()
     {
