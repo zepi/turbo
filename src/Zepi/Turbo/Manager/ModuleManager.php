@@ -460,11 +460,10 @@ class ModuleManager
     protected function _searchModulePath($namespace)
     {
         $folders = explode('\\', $namespace);
+        $targetPath = false;
         
         // Iterate trough the module directories
         foreach ($this->_moduleDirectories as $directory) {
-            $targetPath = $directory;
-            
             $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory);
             $iterator = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
             $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.ini$/i');
