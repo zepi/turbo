@@ -1,0 +1,7 @@
+{
+    "name": "zepi/turbo",
+    "description": "Turbo speeds up your development process.",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
