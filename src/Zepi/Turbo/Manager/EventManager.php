@@ -122,9 +122,26 @@ class EventManager
      */
     protected function _executeEvents($events, $value = null)
     {
+        $request = $this->_framework->getRequest();
+        
         foreach ($events as $priority => $eventHandlers) {
             foreach ($eventHandlers as $eventHandlerName) {
                 $eventHandler = new $eventHandlerName();
+
+                // If the event is a cli event but the request isn't a cli request
+                // we skip this event
+                if (is_subclass_of($eventHandler, '\\Zepi\\Turbo\\FrameworkInterface\\CliEventHandlerInterface') 
+                    && get_class($request) != 'Zepi\\Turbo\\Request\\CliRequest') {
+                    continue;
+                }
+
+                // If the event is a web event but the request isn't a web request
+                // we skip this event
+                if (is_subclass_of($eventHandler, '\\Zepi\\Turbo\\FrameworkInterface\\WebEventHandlerInterface') 
+                    && get_class($request) != 'Zepi\\Turbo\\Request\\WebRequest') {
+                    continue;
+                }
+                
                 $value = $eventHandler->executeEvent(
                     $this->_framework, 
                     $this->_framework->getRequest(), 
