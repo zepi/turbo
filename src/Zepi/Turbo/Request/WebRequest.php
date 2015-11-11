@@ -92,7 +92,7 @@ class WebRequest extends RequestAbstract
      * 
      * @access public
      * @param string $key
-     * @param string $value
+     * @param mixed $value
      */
     public function setSessionData($key, $value)
     {
