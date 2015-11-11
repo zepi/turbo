@@ -322,11 +322,11 @@ class ModuleManager
      */
     protected function _parseModuleIni($path)
     {
-        if (!file_exists($path . 'Module.ini')) {
+        if (!file_exists($path . '/Module.ini')) {
             throw new Exception('Cannot find Module.ini in the path "' . $path . '".');
         }
         
-        $moduleProperties = parse_ini_file($path . 'Module.ini', true);
+        $moduleProperties = parse_ini_file($path . '/Module.ini', true);
         
         return $moduleProperties;
     }
@@ -465,23 +465,16 @@ class ModuleManager
         foreach ($this->_moduleDirectories as $directory) {
             $targetPath = $directory;
             
-            // Iterate trough the namespace parts
-            foreach ($folders as $folder) {
-                $targetPath .= $folder . '/';
-                
-                if (file_exists($targetPath) && file_exists($targetPath . '/Module.ini')) {
-                    // We found a possible module. Now we verify the Module.ini
-                    $moduleNamespace = $this->_getNamespaceFromModuleIni($targetPath);
-                    
-                    if ($moduleNamespace === $namespace) {
-                        break 2;
-                    }
-                } else if (!file_exists($targetPath)) {
-                    // The target path does not exist. This means
-                    // that the target is in an other module directory
-                    
-                    $targetPath = false;
-                    break;
+            $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory);
+            $iterator = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
+            $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.ini$/i');
+            
+            foreach ($regexIterator as $item) {
+                $moduleNamespace = $this->_getNamespaceFromModuleIni($item->getPath());
+
+                if ($moduleNamespace === $namespace) {
+                    $targetPath = $item->getPath();
+                    break 2;
                 }
             }
         }

@@ -62,7 +62,7 @@ class Framework
      * @access protected
      * @var string
      */
-    protected $_frameworkDirectory;
+    protected $_rootDirectory;
     
     /**
      * @access protected
@@ -122,11 +122,11 @@ class Framework
      * Constructs the object
      * 
      * @access private
-     * @param string $frameworkDirectory
+     * @param string $rootDirectory
      */
-    private function __construct($frameworkDirectory)
+    private function __construct($rootDirectory)
     {
-        $this->_frameworkDirectory = $frameworkDirectory;
+        $this->_rootDirectory = $rootDirectory;
     }
     
     /**
@@ -134,13 +134,13 @@ class Framework
      * 
      * @static
      * @access public
-     * @param string $frameworkDirectory
+     * @param string $rootDirectory
      * @return Framework
      */
-    static public function getFrameworkInstance($frameworkDirectory)
+    static public function getFrameworkInstance($rootDirectory)
     {
         if (self::$instance === null) {
-            self::$instance = new Framework($frameworkDirectory);
+            self::$instance = new Framework($rootDirectory);
             self::$instance->_initializeFramework();
         }
         
@@ -153,9 +153,9 @@ class Framework
      * @access public
      * @return string
      */
-    public function getFrameworkDirectory()
+    public function getRootDirectory()
     {
-        return $this->_frameworkDirectory;
+        return $this->_rootDirectory;
     }
     
     /**
@@ -313,9 +313,11 @@ class Framework
         $path = false;
         $className = self::prepareClassName($className);
         
-        if (strpos($className, '\\Zepi\\Turbo') === 0) {
+        if (strpos($className, '\\Zepi\\Turbo\\') === 0) {
+            $sourceDirectory = realpath(__DIR__ . '/../../');
+            
             // The class is from the framework, so we load the class file from the framework directory
-            $path = $this->_frameworkDirectory . '/src/' . str_replace('\\', '/', $className) . '.php';
+            $path = $sourceDirectory . str_replace('\\', '/', $className) . '.php';
         } else {
             // The class isn't from the framework, so we need the module for the given class name
             $module = $this->_moduleManager->getModuleByClassName($className);
@@ -380,15 +382,15 @@ class Framework
         
         switch ($className) {
             case '\\Zepi\\Turbo\\Backend\\VirtualModuleBackend':
-                $path = $this->_frameworkDirectory . '/data/modules.data';
+                $path = $this->_rootDirectory . '/data/modules.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
             break;
             case '\\Zepi\\Turbo\\Backend\\VirtualEventBackend':
-                $path = $this->_frameworkDirectory . '/data/events.data';
+                $path = $this->_rootDirectory . '/data/events.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
             break;
             case '\\Zepi\\Turbo\\Backend\\VirtualRouteBackend':
-                $path = $this->_frameworkDirectory . '/data/routes.data';
+                $path = $this->_rootDirectory . '/data/routes.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
             break;
             default:
