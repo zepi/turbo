@@ -345,7 +345,7 @@ class ModuleManager
         $moduleProperties = $this->_parseModuleIni($path);
         
         if (!isset($moduleProperties['module']['namespace'])) {
-            throw new Exception('The namespace is not set in the module properties for the module in "'. $path . '".');
+            throw new Exception('The namespace is not set in the module properties for the module in "' . $path . '".');
         }
         
         return Framework::prepareNamespace($moduleProperties['module']['namespace']);

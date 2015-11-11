@@ -94,7 +94,7 @@ abstract class RequestAbstract
         $this->_locale = $locale;
         
         if (is_array($params)) {
-           $this->_params = $params; 
+            $this->_params = $params; 
         }
         
         if (substr($base, -1) === '/') {

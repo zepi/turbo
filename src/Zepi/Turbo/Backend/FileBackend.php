@@ -67,7 +67,7 @@ class FileBackend
      * @access public
      * @param string $content
      * @param string $additionalPath
-     * @return boolean
+     * @return integer
      * 
      * @throws Zepi\Turbo\Exception The directory "$directory" doesn't exists!
      * @throws Zepi\Turbo\Exception The file "$path" isn't writable!
