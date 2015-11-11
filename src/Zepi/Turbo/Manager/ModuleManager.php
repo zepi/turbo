@@ -39,6 +39,7 @@ namespace Zepi\Turbo\Manager;
 use \Zepi\Turbo\Framework;
 use \Zepi\Turbo\Backend\ObjectBackendAbstract;
 use \Zepi\Turbo\Exception;
+use \Zepi\Turbo\Module\ModuleAbstract;
 
 /**
  * The ModuleManager manages all modules in the framework. Please do
@@ -58,7 +59,7 @@ class ModuleManager
     
     /**
      * @access protected
-     * @var ModuleBackend
+     * @var \Zepi\Turbo\Backend\ObjectBackendAbstract
      */
     protected $_moduleObjectBackend;
     
@@ -285,7 +286,6 @@ class ModuleManager
      * modules.
      * 
      * @access public
-     * @param boolean $reactivateModules
      */
     public function reactivateModules()
     {
@@ -459,7 +459,6 @@ class ModuleManager
      */
     protected function _searchModulePath($namespace)
     {
-        $folders = explode('\\', $namespace);
         $targetPath = false;
         
         // Iterate trough the module directories

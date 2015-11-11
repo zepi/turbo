@@ -137,7 +137,7 @@ class Framework
      * @param string $rootDirectory
      * @return Framework
      */
-    static public function getFrameworkInstance($rootDirectory)
+    public static function getFrameworkInstance($rootDirectory)
     {
         if (self::$instance === null) {
             self::$instance = new Framework($rootDirectory);
@@ -267,7 +267,7 @@ class Framework
      * @param string $className
      * @return string
      */
-    static public function prepareClassName($className)
+    public static function prepareClassName($className)
     {
         if (substr($className, 0, 1) !== '\\') {
             $className = '\\' . $className;
@@ -285,7 +285,7 @@ class Framework
      * @param string $namespace
      * @return string
      */
-    static public function prepareNamespace($namespace)
+    public static function prepareNamespace($namespace)
     {
         if (substr($namespace, 0, 1) !== '\\') {
             $namespace = '\\' . $namespace;
@@ -414,7 +414,7 @@ class Framework
         // Get the event name for the request and execute the event
         $eventName = $this->_routeManager->getEventNameForRoute($this->_request);
         
-        if ($eventName !== false) {
+        if ($eventName !== false && $eventName != '') {
             $this->_eventManager->executeEvent($eventName);
         } else {
             $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\RouteNotFound');

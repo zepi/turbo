@@ -221,10 +221,11 @@ class RouteManager
         // Split the two routes into parts
         $routeParts = explode($request->getRouteDelimiter(), $route);
         $targetRouteParts = explode($request->getRouteDelimiter(), $request->getRoute());
+        $numberOfTargetRouteParts = count($targetRouteParts);
         
         // If we have different number of parts between the two routes
         // there are not equal so we have no equal route.
-        if (count($routeParts) != count($targetRouteParts)) {
+        if (count($routeParts) != $numberOfTargetRouteParts) {
             return false;
         }
         
@@ -233,7 +234,7 @@ class RouteManager
         $routeParams = array();
         
         // Loop through the route parts and compare each part
-        for ($pos = 0; $pos < count($targetRouteParts); $pos++) {
+        for ($pos = 0; $pos < $numberOfTargetRouteParts; $pos++) {
             $part = $routeParts[$pos];
             $targetPart = $targetRouteParts[$pos];
 

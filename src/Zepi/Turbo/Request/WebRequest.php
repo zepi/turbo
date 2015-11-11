@@ -183,7 +183,6 @@ class WebRequest extends RequestAbstract
      * exists. Otherwise returns false.
      * 
      * @access public
-     * @param string $name
      * @return boolean
      */
     public function hasSession()
@@ -199,7 +198,7 @@ class WebRequest extends RequestAbstract
      * Returns the session
      * 
      * @access public
-     * @return \Zepi\Turbo\FrameworkInterface\SessionInterface
+     * @return false|\Zepi\Turbo\FrameworkInterface\SessionInterface
      */
     public function getSession()
     {

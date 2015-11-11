@@ -191,6 +191,7 @@ class RequestManager
         $acceptLanguageHeader = str_replace('-', '_', $acceptLanguageHeader);
         $locales = explode(',', $acceptLanguageHeader);
         
+        $acceptableLocales = array();
         foreach ($locales as $locale) {
             $priority = 1;
             if (strpos($locale, ';') !== false) {

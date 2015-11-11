@@ -128,7 +128,7 @@ class Response
      * 
      * @access public
      * @param string $key
-     * @return string
+     * @return false|string
      */
     public function getOutputPart($key)
     {
