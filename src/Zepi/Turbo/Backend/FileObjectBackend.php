@@ -66,7 +66,7 @@ class FileObjectBackend extends ObjectBackendAbstract
      * 
      * @access protected
      * @param string $serializedObject
-     * @return boolean
+     * @return false|integer
      * 
      * @throws Zepi\Turbo\Exception The file "$path" isn't writable!
      */

@@ -185,7 +185,7 @@ class RouteManager
      * 
      * @access public
      * @param \Zepi\Turbo\Request\RequestAbstract $request
-     * @return boolean|string
+     * @return false|string
      */
     public function getEventNameForRoute(RequestAbstract $request)
     {

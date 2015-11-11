@@ -81,9 +81,9 @@ class FileBackend
         
         $directory = dirname($path);
         if (!file_exists($directory)) {
-            @mkdir($directory, 0755, true);
+            $result = mkdir($directory, 0755, true);
             
-            if (!file_exists($directory)) {
+            if (!$result || !file_exists($directory)) {
                 throw new Exception('The directory "' . $directory . '" doesn\'t exists!');
             }
         }
