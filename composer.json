@@ -1,6 +1,21 @@
 {
     "name": "zepi/turbo",
     "description": "Turbo speeds up your development process.",
+    "homepage": "https://turbo.zepi.net",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matthias Zobrist",
+            "email": "matthias.zobrist@zepi.net",
+            "homepage": "https://zepi.net",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Zepi": "src"
+        }
+    },
     "require": {
         "php": ">=5.3.0"
     }
