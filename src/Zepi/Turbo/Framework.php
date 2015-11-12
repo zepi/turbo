@@ -35,6 +35,7 @@
 
 namespace Zepi\Turbo;
 
+use \Zepi\Turbo\Manager\DataSourceManager;
 use \Zepi\Turbo\Manager\ModuleManager;
 use \Zepi\Turbo\Manager\EventManager;
 use \Zepi\Turbo\Manager\RouteManager;
@@ -81,40 +82,46 @@ class Framework
      * @var array
      */
     protected $_modules = array();
+    
+    /**
+     * @access protected
+     * @var \Zepi\Turbo\Manager\DataSourceManager
+     */
+    protected $_dataSourceManager;
 
     /**
      * @access protected
-     * @var ModuleManager
+     * @var \Zepi\Turbo\Manager\ModuleManager
      */
     protected $_moduleManager;
     
     /**
      * @access protected
-     * @var EventManager
+     * @var \Zepi\Turbo\Manager\EventManager
      */
     protected $_eventManager;
     
     /**
      * @access protected
-     * @var RouteManager
+     * @var \Zepi\Turbo\Manager\RouteManager
      */
     protected $_routeManager;
     
     /**
      * @access protected
-     * @var RequestManager
+     * @var \Zepi\Turbo\Manager\RequestManager
      */
     protected $_requestManager;
     
     /**
      * @access protected
-     * @var RequestAbstract
+     * @var \Zepi\Turbo\Request\RequestAbstract
      */
     protected $_request;
     
     /**
      * @access protected
-     * @var Response
+     * @var \Zepi\Turbo\Response\Response
      */
     protected $_response;
     
@@ -172,6 +179,9 @@ class Framework
         
         $this->_response = new Response($this->_request);
         
+        $this->_dataSourceManager = new DataSourceManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualDataSourceBackend'));
+        $this->_dataSourceManager->initializeDataSourceManager();
+        
         $this->_moduleManager = new ModuleManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualModuleBackend'));
         $this->_moduleManager->initializeModuleSystem();
         
@@ -181,12 +191,23 @@ class Framework
         $this->_routeManager = new RouteManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualRouteBackend'));
         $this->_routeManager->initializeRoutingTable();
     }
+    
+    /**
+     * Returns the data source manager for the framework
+     *
+     * @access public
+     * @return \Zepi\Turbo\Manager\DataSourceManager
+     */
+    public function getDataSourceManager()
+    {
+        return $this->_dataSourceManager;
+    }
 
     /**
      * Returns the module manager for the framework
      * 
      * @access public
-     * @return ModuleManager
+     * @return \Zepi\Turbo\Manager\ModuleManager
      */
     public function getModuleManager()
     {
@@ -197,7 +218,7 @@ class Framework
      * Returns the event manager for the framework
      * 
      * @access public
-     * @return EventManager
+     * @return \Zepi\Turbo\Manager\EventManager
      */
     public function getEventManager()
     {
@@ -208,7 +229,7 @@ class Framework
      * Returns the route manager for the framework 
      * 
      * @access public
-     * @return RouteManager
+     * @return \Zepi\Turbo\Manager\RouteManager
      */
     public function getRouteManager()
     {
@@ -219,7 +240,7 @@ class Framework
      * Returns the RequestManager object
      * 
      * @access public
-     * @return RequestManager
+     * @return \Zepi\Turbo\Manager\RequestManager
      */
     public function getRequestManager()
     {
@@ -230,7 +251,7 @@ class Framework
      * Returns the request object for the request
      * 
      * @access public
-     * @return RequestAbstract
+     * @return \Zepi\Turbo\Request\RequestAbstract
      */
     public function getRequest()
     {
@@ -241,7 +262,7 @@ class Framework
      * Returns the response for the request
      * 
      * @access public
-     * @return Response
+     * @return \Zepi\Turbo\Response\Response
      */
     public function getResponse()
     {
@@ -393,6 +414,10 @@ class Framework
                 $path = $this->_rootDirectory . '/data/routes.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
             break;
+            case '\\Zepi\\Turbo\\Backend\\VirtualDataSourceBackend':
+                $path = $this->_rootDirectory . '/data/data-sources.data';
+                return new \Zepi\Turbo\Backend\FileObjectBackend($path);
+                break;
             default:
                 return new $className();
             break;
