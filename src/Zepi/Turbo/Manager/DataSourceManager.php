@@ -129,10 +129,9 @@ class DataSourceManager
      * @access public
      * @param string $typeClass
      * @param string $driver
-     * @param string $class
      * @return boolean
      */
-    public function removeDataSource($typeClass, $driver, $class)
+    public function removeDataSource($typeClass, $driver)
     {
         if (!isset($this->_dataSources[$typeClass][$driver])) {
             return false;
@@ -190,11 +189,18 @@ class DataSourceManager
      * @param string $typeClass
      * @return mixed
      * 
-     * @throw \Zepi\Turbo\Exception Cannot find a data source for the given type class.
+     * @throws \Zepi\Turbo\Exception Cannot find a driver for the given type class.
+     * @throws \Zepi\Turbo\Exception Cannot find a data source for the given type class.
      */
     public function getDataSource($typeClass)
     {
         $driver = $this->_getDriver($typeClass);
+        
+        // If there is no driver for the given type class throw an exception
+        if ($driver === false) {
+            throw new Exception('Cannot find a driver for the given type class "' . $typeClass . '".');
+        }
+        
         $dataSourceClass = $this->_searchDataSourceClass($typeClass, $driver);
 
         // If there is no data source class for the given type class throw an exception
@@ -221,13 +227,13 @@ class DataSourceManager
         foreach ($this->_definitions as $selector => $driver) {
             if ($selector === '*' || $selector === $typeClass) {
                 $bestDriver = $driver;
-                $numerOfParts = $this->_countNumberOfParts($selector);
+                $numberOfParts = $this->_countNumberOfParts($selector);
             } else if (substr($selector, -1) === '*') {
                 $selectorWithoutWildcard = substr($selector, 0, -1);
                 
                 if (strpos($selector, $selectorWithoutWildcard) === 0 || $numberOfParts < $this->_countNumberOfParts($selector)) {
                     $bestDriver = $driver;
-                    $numerOfParts = $this->_countNumberOfParts($selector);
+                    $numberOfParts = $this->_countNumberOfParts($selector);
                 }
             }
         }
