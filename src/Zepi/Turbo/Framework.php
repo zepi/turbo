@@ -37,11 +37,12 @@ namespace Zepi\Turbo;
 
 use \Zepi\Turbo\Manager\DataSourceManager;
 use \Zepi\Turbo\Manager\ModuleManager;
-use \Zepi\Turbo\Manager\EventManager;
+use \Zepi\Turbo\Manager\RuntimeManager;
 use \Zepi\Turbo\Manager\RouteManager;
 use \Zepi\Turbo\Manager\RequestManager;
 use \Zepi\Turbo\Request\RequestAbstract;
 use \Zepi\Turbo\Response\Response;
+use Zepi\Turbo\Manager\Zepi\Turbo\Manager;
 
 /**
  * The Framework object delivers the root functionality for
@@ -97,9 +98,9 @@ class Framework
     
     /**
      * @access protected
-     * @var \Zepi\Turbo\Manager\EventManager
+     * @var \Zepi\Turbo\Manager\RuntimeManager
      */
-    protected $_eventManager;
+    protected $_runtimeManager;
     
     /**
      * @access protected
@@ -185,8 +186,8 @@ class Framework
         $this->_moduleManager = new ModuleManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualModuleBackend'));
         $this->_moduleManager->initializeModuleSystem();
         
-        $this->_eventManager = new EventManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualEventBackend'));
-        $this->_eventManager->initializeEventSystem();
+        $this->_runtimeManager = new RuntimeManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualHandlerBackend'));
+        $this->_runtimeManager->initializeManager();
         
         $this->_routeManager = new RouteManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualRouteBackend'));
         $this->_routeManager->initializeRoutingTable();
@@ -215,14 +216,14 @@ class Framework
     }
     
     /**
-     * Returns the event manager for the framework
+     * Returns the runtime manager for the framework
      * 
      * @access public
-     * @return \Zepi\Turbo\Manager\EventManager
+     * @return \Zepi\Turbo\Manager\RuntimeManager
      */
-    public function getEventManager()
+    public function getRuntimeManager()
     {
-        return $this->_eventManager;
+        return $this->_runtimeManager;
     }
     
     /**
@@ -406,8 +407,8 @@ class Framework
                 $path = $this->_rootDirectory . '/data/modules.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
             break;
-            case '\\Zepi\\Turbo\\Backend\\VirtualEventBackend':
-                $path = $this->_rootDirectory . '/data/events.data';
+            case '\\Zepi\\Turbo\\Backend\\VirtualHandlerBackend':
+                $path = $this->_rootDirectory . '/data/handlers.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
             break;
             case '\\Zepi\\Turbo\\Backend\\VirtualRouteBackend':
@@ -434,30 +435,30 @@ class Framework
     public function execute()
     {
         // Execute the before execution event
-        $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeExecution');
+        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeExecution');
         
         // Get the event name for the request and execute the event
         $eventName = $this->_routeManager->getEventNameForRoute($this->_request);
         
         if ($eventName !== false && $eventName != '') {
-            $this->_eventManager->executeEvent($eventName);
+            $this->_runtimeManager->executeEvent($eventName);
         } else {
-            $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\RouteNotFound');
+            $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\RouteNotFound');
         }
         
         // Execute the after execution event
-        $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterExecution');
+        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterExecution');
 
         // Finalize the output
-        $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\FinalizeOutput');
+        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\FinalizeOutput');
         
         // Execute the before output event
-        $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeOutput');
+        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeOutput');
         
         // Print the output
         echo $this->_response->getOutput();
         
         // Execute the after output event
-        $this->_eventManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterOutput');
+        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterOutput');
     }
 }

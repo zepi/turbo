@@ -25,7 +25,7 @@
  */
 
 /**
- * This interface defines an event handler. The event handler
+ * This interface defines a filter handler. The filter handler
  * will be executed from the runtime manager and executes the filter.
  * 
  * @package Zepi\Turbo\FrameworkInterface
@@ -40,16 +40,16 @@ use \Zepi\Turbo\Request\RequestAbstract;
 use \Zepi\Turbo\Response\Response;
 
 /**
- * This interface defines an event handler. The event handler
- * will be executed from the runtime manager and executes the filter.
+ * This interface defines a filter handler. The filter handler
+ * will be called from the runtime manager and executes the filter.
  * 
  * @author Matthias Zobrist <matthias.zobrist@zepi.net>
  * @copyright Copyright (c) 2015 zepi
  */
-interface EventHandlerInterface
+interface FilterHandlerInterface
 {
     /**
-     * Executes the event. This function must handle all exceptions. 
+     * Executes the filter. This function must handle all exceptions. 
      * If the function doesn't catch an exception, the exception 
      * will terminate the whole process.
      * 
@@ -57,6 +57,8 @@ interface EventHandlerInterface
      * @param \Zepi\Turbo\Framework $framework
      * @param \Zepi\Turbo\Request\RequestAbstract $request
      * @param \Zepi\Turbo\Response\Response $response
+     * @param mixed $value
+     * @return mixed
      */
-    public function execute(Framework $framework, RequestAbstract $request, Response $response);
+    public function execute(Framework $framework, RequestAbstract $request, Response $response, $value = null);
 }

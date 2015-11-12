@@ -50,16 +50,5 @@ use \Zepi\Turbo\Response\Response;
  */
 interface CliEventHandlerInterface
 {
-    /**
-     * Executes the event. This function must handle all exceptions. 
-     * If the function doesn't catch an exception, the exception 
-     * will terminate the whole process.
-     * 
-     * @access public
-     * @param \Zepi\Turbo\Framework $framework
-     * @param \Zepi\Turbo\Request\CliRequest $request
-     * @param \Zepi\Turbo\Response\Response $response
-     * @param mixed $value
-     */
-    public function executeEvent(Framework $framework, CliRequest $request, Response $response, $value = null);
+    
 }
