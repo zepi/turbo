@@ -1,6 +1,10 @@
 # turbo
 Turbo - Speeds up your development process.
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zepi/turbo/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/zepi/turbo/?branch=master)
+[![Build Status](https://travis-ci.org/zepi/turbo.svg?branch=master)](https://travis-ci.org/zepi/turbo)
+[![codecov.io](https://codecov.io/github/zepi/turbo/coverage.svg?branch=master)](https://codecov.io/github/zepi/turbo?branch=master)
+
 # Installation
 1. Clone or download the git repository [zepi/turbo-boilerplate](https://github.com/zepi/turbo-boilerplate)
 2. Execute composer `composer update`
