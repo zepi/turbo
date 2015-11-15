@@ -5,7 +5,7 @@ build:
     tests:
         override:
             -
-                command: phpunit --coverage-clover=turbo-coverage --report-useless-tests --strict-coverage --bootstrap ./tests/bootstrap.php --whitelist ./src ./tests
+                command: phpunit --coverage-clover=turbo-coverage --report-useless-tests --strict-coverage --bootstrap ./tests/bootstrap.php ./tests
                 coverage:
                     file: turbo-coverage
                     format: php-clover
