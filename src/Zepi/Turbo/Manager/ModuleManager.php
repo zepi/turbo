@@ -217,7 +217,7 @@ class ModuleManager
         
         // Load the module to deactivate it
         $namespace = Framework::prepareNamespace($namespace);
-        $module = $this->getModuleByNamespace($namespace);
+        $module = $this->getModule($namespace);
         
         // If the module isn't initialized it isn't active
         if ($module === false) {
@@ -261,24 +261,6 @@ class ModuleManager
         }
         
         return $foundModule;
-    }
-    
-    /**
-     * Returns the object of the initialized module for the given
-     * namespace. If the module isn't initialized, the function
-     * will return false.
-     * 
-     * @access public
-     * @param string $namespace
-     * @return boolean|ModuleAbstract
-     */
-    public function getModuleByNamespace($namespace)
-    {
-        if (!isset($this->_modules[$namespace])) {
-            return false;
-        }
-        
-        return $this->_modules[$namespace];
     }
     
     /**
@@ -366,7 +348,7 @@ class ModuleManager
     protected function _initializeModule($path, $activateDependencies = false)
     {
         $moduleNamespace = $this->_getNamespaceFromModuleIni($path);
-        $module = $this->getModuleByNamespace($moduleNamespace);
+        $module = $this->getModule($moduleNamespace);
         
         // If the module is already initialized, return it
         if ($module instanceof ModuleAbstract) {
@@ -437,7 +419,7 @@ class ModuleManager
         foreach ($dependencies as $dependencyModuleNamespace) {
             $dependencyModuleNamespace = Framework::prepareNamespace($dependencyModuleNamespace);
             
-            $module = $this->getModuleByNamespace($dependencyModuleNamespace);
+            $module = $this->getModule($dependencyModuleNamespace);
             if ($module === false) {
                 if ($activateDependencies) {
                     $this->activateModule($dependencyModuleNamespace, $activateDependencies);
@@ -469,7 +451,7 @@ class ModuleManager
             
             foreach ($regexIterator as $item) {
                 $moduleNamespace = $this->_getNamespaceFromModuleIni($item->getPath());
-
+                
                 if ($moduleNamespace === $namespace) {
                     $targetPath = $item->getPath();
                     break 2;

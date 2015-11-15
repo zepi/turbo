@@ -129,19 +129,19 @@ class RuntimeManager
      * 
      * @access protected
      * @param string $type
-     * @param string $itemName
+     * @param string $handlerName
      * @param mixed $value
      * @return mixed
      */
-    protected function _executeItems($type, $itemName, $value = null)
+    protected function _executeItems($type, $name, $value = null)
     {
-        if (!isset($this->_handlers[$type][$itemName])) {
+        if (!isset($this->_handlers[$type][$name])) {
             return;
         }
         
         $request = $this->_framework->getRequest();
         
-        foreach ($this->_handlers[$type][$itemName] as $priority => $handlers) {
+        foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
             foreach ($handlers as $handlerName) {
                 $handler = new $handlerName();
 
@@ -150,11 +150,15 @@ class RuntimeManager
                     continue;
                 }
                 
+                $response = $this->_framework->getResponse();
+                $response->setData('_executedType', $type);
+                $response->setData('_executedName', $name);
+                
                 // Execute the handler
                 $handlerResult = $handler->execute(
                     $this->_framework, 
                     $this->_framework->getRequest(), 
-                    $this->_framework->getResponse(),
+                    $response,
                     $value
                 );
                 

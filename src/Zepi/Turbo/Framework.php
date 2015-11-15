@@ -58,7 +58,7 @@ class Framework
      * @access protected
      * @var Framework
      */
-    static protected $instance;
+    static protected $_instance;
     
     /**
      * @access protected
@@ -147,12 +147,23 @@ class Framework
      */
     public static function getFrameworkInstance($rootDirectory)
     {
-        if (self::$instance === null) {
-            self::$instance = new Framework($rootDirectory);
-            self::$instance->_initializeFramework();
+        if (self::$_instance === null) {
+            self::$_instance = new Framework($rootDirectory);
+            self::$_instance->_initializeFramework();
         }
         
-        return self::$instance;
+        return self::$_instance;
+    }
+    
+    /**
+     * Resets the framework
+     * 
+     * @static
+     * @access public
+     */
+    public static function resetFramework()
+    {
+        self::$_instance = null;
     }
     
     /**
@@ -333,6 +344,7 @@ class Framework
     public function loadClass($className)
     {
         $path = false;
+        $module = false;
         $className = self::prepareClassName($className);
         
         if (strpos($className, '\\Zepi\\Turbo\\') === 0) {
@@ -352,8 +364,8 @@ class Framework
 
         if ($path !== false && file_exists($path)) {
             require_once($path);
-        } else {
-            throw new \Exception('Cannot find the class "' . $className . '"!');
+        } else if ($module !== false) {
+            throw new Exception('Cannot find the class "' . $className . '"!');
         }
     }
     
@@ -397,31 +409,37 @@ class Framework
      * @access protected
      * @param string $className
      * @return mixed
+     * 
+     * @throws \Zepi\Turbo\Exception Class "{className}" is not defined.
      */
     protected function _getInstance($className)
     {
         $className = self::prepareClassName($className);
-        
+
         switch ($className) {
             case '\\Zepi\\Turbo\\Backend\\VirtualModuleBackend':
                 $path = $this->_rootDirectory . '/data/modules.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
-            break;
+                break;
             case '\\Zepi\\Turbo\\Backend\\VirtualHandlerBackend':
                 $path = $this->_rootDirectory . '/data/handlers.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
-            break;
+                break;
             case '\\Zepi\\Turbo\\Backend\\VirtualRouteBackend':
                 $path = $this->_rootDirectory . '/data/routes.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
-            break;
+                break;
             case '\\Zepi\\Turbo\\Backend\\VirtualDataSourceBackend':
                 $path = $this->_rootDirectory . '/data/data-sources.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
                 break;
             default:
-                return new $className();
-            break;
+                if (class_exists($className, true)) {
+                    return new $className();
+                } else {
+                    throw new Exception('Class "' . $className . '" is not defined.');
+                }
+                break;
         }
     }
     
@@ -430,7 +448,7 @@ class Framework
      * Between these two events we call the correct request event. The 
      * routing table from the RouteManager returns the needed event name.
      * 
-     * @access protected
+     * @access public
      */
     public function execute()
     {
