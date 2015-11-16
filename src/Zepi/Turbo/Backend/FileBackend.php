@@ -69,25 +69,16 @@ class FileBackend
      * @param string $additionalPath
      * @return integer
      * 
-     * @throws Zepi\Turbo\Exception The directory "$directory" doesn't exists!
      * @throws Zepi\Turbo\Exception The file "$path" isn't writable!
      */
     public function saveToFile($content, $additionalPath = '')
     {
-        $path = $this->_path;
-        if ($additionalPath !== '') {
-            $path .= $additionalPath;
-        }
+        $path = $this->_realPath($additionalPath, false);
         
-        $directory = dirname($path);
-        if (!file_exists($directory)) {
-            $result = mkdir($directory, 0755, true);
-            
-            if (!$result || !file_exists($directory)) {
-                throw new Exception('The directory "' . $directory . '" doesn\'t exists!');
-            }
-        }
+        // If the path does not exists create the directory
+        $this->_createTargetDirectory($path);
         
+        // If the file exists but isn't writeable we need to throw an exception
         if (file_exists($path) && !is_writable($path)) {
             throw new Exception('The file "' . $path . '" isn\'t writable!');
         }
@@ -96,13 +87,31 @@ class FileBackend
     }
     
     /**
+     * Creates the target directory
+     * 
+     * @access protected
+     * @param string $path
+     * 
+     * @throws \Zepi\Turbo\Exception The directory "{directory}" doesn't exists
+     */
+    protected function _createTargetDirectory($path)
+    {
+        $directory = dirname($path);
+        if (!file_exists($directory)) {
+            $result = mkdir($directory, 0755, true);
+        
+            if (!$result || !file_exists($directory)) {
+                throw new Exception('The directory "' . $directory . '" doesn\'t exists!');
+            }
+        }
+    }
+    
+    /**
      * Loads the content from the file
      * 
      * @access public
      * @param string $additionalPath
      * @return string
-     * 
-     * @throws Zepi\Turbo\Exception The file "$path" isn't readable!
      */
     public function loadFromFile($additionalPath = '')
     {
@@ -110,10 +119,6 @@ class FileBackend
         
         if ($path === false) {
             return '';
-        }
-        
-        if (!is_readable($path)) {
-            throw new Exception('The file "' . $path . '" isn\'t readable!');
         }
         
         return file_get_contents($path);
@@ -125,8 +130,6 @@ class FileBackend
      * @access public
      * @param string $additionalPath
      * @return string
-     * 
-     * @throws Zepi\Turbo\Exception The file "$path" isn't writable!
      */
     public function deleteFile($additionalPath = '')
     {
@@ -134,10 +137,6 @@ class FileBackend
         
         if ($path === false) {
             return false;
-        }
-        
-        if (!is_writable($path)) {
-            throw new Exception('The file "' . $path . '" isn\'t writable!');
         }
         
         return unlink($path);
@@ -149,9 +148,12 @@ class FileBackend
      * 
      * @access public
      * @param string $additionalPath
+     * @param boolean $testDirectory
      * @return boolean|mixed
+     * 
+     * @throws \Zepi\Turbo\Exception The file path "{path}" is not readable and not writeable!
      */
-    protected function _realPath($additionalPath)
+    protected function _realPath($additionalPath, $testDirectory = true)
     {
         if (substr($additionalPath, 0, 1) === '/') {
             $path = $additionalPath;
@@ -161,8 +163,12 @@ class FileBackend
             $path = $this->_path;
         }
     
-        if (!file_exists($path)) {
+        if ($testDirectory && !file_exists($path)) {
             return false;
+        }
+        
+        if ($testDirectory && !is_readable($path) && !is_writeable($path)) {
+            throw new Exception('The file path "' . $path . '" is not readable and not writeable!');
         }
         
         return $path;
