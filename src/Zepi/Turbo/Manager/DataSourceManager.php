@@ -212,6 +212,17 @@ class DataSourceManager
     }
     
     /**
+     * Returns an array with all DataSource type classes
+     * 
+     * @access public
+     * @return array
+     */
+    public function getDataSourceTypeClasses()
+    {
+        return array_keys($this->_dataSources);
+    }
+    
+    /**
      * Returns the driver for the given type class or false if no 
      * driver is available.
      * 
