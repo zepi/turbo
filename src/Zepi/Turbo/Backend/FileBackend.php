@@ -73,7 +73,7 @@ class FileBackend
      */
     public function saveToFile($content, $additionalPath = '')
     {
-        $path = $this->_realPath($additionalPath, false);
+        $path = $this->_realPath($additionalPath);
         
         // If the path does not exists create the directory
         $this->_createTargetDirectory($path);
@@ -87,26 +87,6 @@ class FileBackend
     }
     
     /**
-     * Creates the target directory
-     * 
-     * @access protected
-     * @param string $path
-     * 
-     * @throws \Zepi\Turbo\Exception The directory "{directory}" doesn't exists
-     */
-    protected function _createTargetDirectory($path)
-    {
-        $directory = dirname($path);
-        if (!file_exists($directory)) {
-            $result = mkdir($directory, 0755, true);
-        
-            if (!$result || !file_exists($directory)) {
-                throw new Exception('The directory "' . $directory . '" doesn\'t exists!');
-            }
-        }
-    }
-    
-    /**
      * Loads the content from the file
      * 
      * @access public
@@ -115,7 +95,7 @@ class FileBackend
      */
     public function loadFromFile($additionalPath = '')
     {
-        $path = $this->_realPath($additionalPath);
+        $path = $this->_testPath($this->_realPath($additionalPath));
         
         if ($path === false) {
             return '';
@@ -129,49 +109,17 @@ class FileBackend
      * 
      * @access public
      * @param string $additionalPath
-     * @return string
+     * @return boolean
      */
     public function deleteFile($additionalPath = '')
     {
-        $path = $this->_realPath($additionalPath);
+        $path = $this->_testPath($this->_realPath($additionalPath));
         
         if ($path === false) {
             return false;
         }
         
         return unlink($path);
-    }
-    
-    /**
-     * Returns the real path for the given additional path and the 
-     * file path which was given to the backend in the constructor.
-     * 
-     * @access public
-     * @param string $additionalPath
-     * @param boolean $testDirectory
-     * @return boolean|mixed
-     * 
-     * @throws \Zepi\Turbo\Exception The file path "{path}" is not readable and not writeable!
-     */
-    protected function _realPath($additionalPath, $testDirectory = true)
-    {
-        if (substr($additionalPath, 0, 1) === '/') {
-            $path = $additionalPath;
-        } else if ($additionalPath !== '') {
-            $path = $this->_path . $additionalPath;
-        } else {
-            $path = $this->_path;
-        }
-    
-        if ($testDirectory && !file_exists($path)) {
-            return false;
-        }
-        
-        if ($testDirectory && !is_readable($path) && !is_writeable($path)) {
-            throw new Exception('The file path "' . $path . '" is not readable and not writeable!');
-        }
-        
-        return $path;
     }
     
     /**
@@ -191,5 +139,70 @@ class FileBackend
         }
         
         return true;
+    }
+    
+    /**
+     * Returns the real path for the given additional path and the
+     * file path which was given to the backend in the constructor.
+     *
+     * @access public
+     * @param string $additionalPath
+     * @param boolean $testDirectory
+     * @return string
+     */
+    protected function _realPath($additionalPath, $testDirectory = true)
+    {
+        if (substr($additionalPath, 0, 1) === '/') {
+            $path = $additionalPath;
+        } else if ($additionalPath !== '') {
+            $path = $this->_path . $additionalPath;
+        } else {
+            $path = $this->_path;
+        }
+    
+        return $path;
+    }
+    
+    /**
+     * If the path exists return the path. Otherwise return false
+     * or throw an exception.
+     * 
+     * @access protected
+     * @param string $path
+     * @return false|string
+     * 
+     * @throws \Zepi\Turbo\Exception The file path "{path}" is not readable and not writeable!
+     */
+    protected function _testPath($path)
+    {
+        if (!file_exists($path)) {
+            return false;
+        }
+        
+        if (!is_readable($path) && !is_writeable($path)) {
+            throw new Exception('The file path "' . $path . '" is not readable and not writeable!');
+        }
+        
+        return $path;
+    }
+    
+    /**
+     * Creates the target directory
+     *
+     * @access protected
+     * @param string $path
+     *
+     * @throws \Zepi\Turbo\Exception The directory "{directory}" doesn't exists
+     */
+    protected function _createTargetDirectory($path)
+    {
+        $directory = dirname($path);
+        if (!file_exists($directory)) {
+            $result = mkdir($directory, 0755, true);
+    
+            if (!$result || !file_exists($directory)) {
+                throw new Exception('The directory "' . $directory . '" doesn\'t exists!');
+            }
+        }
     }
 }
