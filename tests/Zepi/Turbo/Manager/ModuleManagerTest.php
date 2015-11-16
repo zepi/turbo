@@ -20,16 +20,17 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
         $this->_moduleManager->initializeModuleSystem();
     }
     
-    //
     public function testInitializeManagerTwoTimes()
     {
         $this->_fileObjectBackend = $this->getMockBuilder('\\Zepi\\Turbo\\Backend\\FileObjectBackend')
                                          ->setConstructorArgs(array(TESTS_ROOT_DIR . '/modules-working/'))
                                          ->getMock();
         
+        $path = TESTS_ROOT_DIR . '/modules-working/TestModule';
+        $length = strlen($path);
         $this->_fileObjectBackend->expects($this->exactly(2))
                                  ->method('loadObject')
-                                 ->willReturn(unserialize('a:1:{s:12:"\TestModule\";a:2:{s:7:"version";s:3:"1.0";s:4:"path";s:47:"' . TESTS_ROOT_DIR . '/modules-working/TestModule";}}'));
+                                 ->willReturn(unserialize('a:1:{s:12:"\TestModule\";a:2:{s:7:"version";s:3:"1.0";s:4:"path";s:' . $length . ':"' . $path . '";}}'));
         
         $this->_moduleManager = new \Zepi\Turbo\Manager\ModuleManager($this->_framework, $this->_fileObjectBackend);
         $this->_moduleManager->initializeModuleSystem();
