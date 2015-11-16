@@ -140,32 +140,25 @@ class RuntimeManager
         }
         
         $request = $this->_framework->getRequest();
-        
-        foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
-            foreach ($handlers as $handlerName) {
-                $handler = new $handlerName();
 
-                // If this is an event handler check the request interface
-                if ($type === self::EVENT && !$this->_compareRequestInterface($request, $handler)) {
-                    continue;
-                }
+        foreach ($this->_filterHandlers($type, $name, $request) as $handlerName) {
+            $handler = new $handlerName();
                 
-                $response = $this->_framework->getResponse();
-                $response->setData('_executedType', $type);
-                $response->setData('_executedName', $name);
+            $response = $this->_framework->getResponse();
+            $response->setData('_executedType', $type);
+            $response->setData('_executedName', $name);
                 
-                // Execute the handler
-                $handlerResult = $handler->execute(
-                    $this->_framework, 
-                    $this->_framework->getRequest(), 
-                    $response,
-                    $value
-                );
+            // Execute the handler
+            $handlerResult = $handler->execute(
+                $this->_framework, 
+                $this->_framework->getRequest(), 
+                $response,
+                $value
+            );
                 
-                // Save the handler result to the variable if this is an filter handler
-                if ($type === self::FILTER) {
-                    $value = $handlerResult;
-                }
+            // Save the handler result to the variable if this is an filter handler
+            if ($type === self::FILTER) {
+                $value = $handlerResult;
             }
         }
         
@@ -176,27 +169,56 @@ class RuntimeManager
     }
     
     /**
+     * Filters the handler and returns an single array with
+     * all queued handlers
+     * 
+     * @access protected
+     * @param string $type
+     * @param string $name
+     * @param RequestAbstract $request
+     * @return array
+     */
+    protected function _filterHandlers($type, $name, RequestAbstract $request)
+    {
+    	$handlers = array();
+    	
+    	foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
+    		foreach ($handlers as $handlerName) {
+    			if ($type === self::EVENT && !$this->_compareRequestInterface($request, $handlerName)) {
+    				continue;
+    			}
+    			
+    			$handlers[] = $handlerName;
+    		}
+    	}
+    	
+    	return array_unique($handlers);
+    }
+    
+    /**
      * Returns true if the event handler and the request are from the same interface,
      * e.g. both are from cli. If the event handler is neutral return true. Return false
      * if the event handler isn't neutral and the request is not from the same interface.
      * 
      * @access protected
      * @param RequestAbstract $request
-     * @param EventHandlerInterface $handler
+     * @param string $handlerName
      * @return boolean
      */
-    protected function _compareRequestInterface(RequestAbstract $request, $handler)
+    protected function _compareRequestInterface(RequestAbstract $request, $handlerName)
     {
+    	$implementedInterfaces = class_implements($handlerName, true);
+    	
         // If the event is a cli event but the request isn't a cli request
         // we skip this event
-        if (is_subclass_of($handler, '\\Zepi\\Turbo\\FrameworkInterface\\CliEventHandlerInterface')
+        if (isset($implementedInterfaces['\\Zepi\\Turbo\\FrameworkInterface\\CliEventHandlerInterface'])
             && get_class($request) != 'Zepi\\Turbo\\Request\\CliRequest') {
             return false;
         }
 
         // If the event is a web event but the request isn't a web request
         // we skip this event
-        if (is_subclass_of($handler, '\\Zepi\\Turbo\\FrameworkInterface\\WebEventHandlerInterface')
+        if (isset($implementedInterfaces['\\Zepi\\Turbo\\FrameworkInterface\\WebEventHandlerInterface'])
             && get_class($request) != 'Zepi\\Turbo\\Request\\WebRequest') {
             return false;
         }
