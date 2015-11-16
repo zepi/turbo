@@ -61,7 +61,7 @@ abstract class ObjectBackendAbstract
      * 
      * @access protected
      * @param string $serializedObject
-     * @return boolean
+     * @return integer
      */
     abstract protected function _saveSerializedObject($serializedObject);
     

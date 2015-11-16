@@ -129,7 +129,7 @@ class RuntimeManager
      * 
      * @access protected
      * @param string $type
-     * @param string $handlerName
+     * @param string $name
      * @param mixed $value
      * @return mixed
      */
@@ -265,7 +265,6 @@ class RuntimeManager
      * @param string $eventName
      * @param string $eventHandlerName
      * @param integer $priority
-     * @return boolean
      */
     public function removeEventHandler($eventName, $eventHandlerName, $priority = 50)
     {
