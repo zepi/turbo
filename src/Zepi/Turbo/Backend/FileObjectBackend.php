@@ -72,7 +72,7 @@ class FileObjectBackend extends ObjectBackendAbstract
      */
     protected function _saveSerializedObject($serializedObject)
     {
-        if (!is_writable($this->_path)) {
+        if (file_exists($this->_path) && !is_writable($this->_path)) {
             throw new Exception('The file "' . $this->_path . '" isn\'t writable!');
         }
 
