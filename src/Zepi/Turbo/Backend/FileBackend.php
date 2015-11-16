@@ -106,15 +106,9 @@ class FileBackend
      */
     public function loadFromFile($additionalPath = '')
     {
-        if (substr($additionalPath, 0, 1) === '/') {
-            $path = $additionalPath;
-        } else if ($additionalPath !== '') {
-            $path = $this->_path . $additionalPath;
-        } else {
-            $path = $this->_path;
-        }
+        $path = $this->_realPath($additionalPath);
         
-        if (!file_exists($path)) {
+        if ($path === false) {
             return '';
         }
         
@@ -136,18 +130,10 @@ class FileBackend
      */
     public function deleteFile($additionalPath = '')
     {
-        // Determine the full path
-        if (substr($additionalPath, 0, 1) === '/') {
-            $path = $additionalPath;
-        } else if ($additionalPath !== '') {
-            $path = $this->_path . $additionalPath;
-        } else {
-            $path = $this->_path;
-        }
+        $path = $this->_realPath($additionalPath);
         
-        // If the file doesn't exists, we haven't to do anything...
-        if (!file_exists($path)) {
-            return true;
+        if ($path === false) {
+            return false;
         }
         
         if (!is_writable($path)) {
@@ -155,6 +141,31 @@ class FileBackend
         }
         
         return unlink($path);
+    }
+    
+    /**
+     * Returns the real path for the given additional path and the 
+     * file path which was given to the backend in the constructor.
+     * 
+     * @access public
+     * @param string $additionalPath
+     * @return boolean|mixed
+     */
+    protected function _realPath($additionalPath)
+    {
+        if (substr($additionalPath, 0, 1) === '/') {
+            $path = $additionalPath;
+        } else if ($additionalPath !== '') {
+            $path = $this->_path . $additionalPath;
+        } else {
+            $path = $this->_path;
+        }
+    
+        if (!file_exists($path)) {
+            return false;
+        }
+        
+        return $path;
     }
     
     /**
@@ -167,16 +178,9 @@ class FileBackend
      */
     public function isWritable($additionalPath = '')
     {
-        // Determine the full path
-        if (substr($additionalPath, 0, 1) === '/') {
-            $path = $additionalPath;
-        } else if ($additionalPath !== '') {
-            $path = $this->_path . $additionalPath;
-        } else {
-            $path = $this->_path;
-        }
+        $path = $this->_realPath($additionalPath);
         
-        if (!file_exists($path) || !is_writable($path)) {
+        if ($path === false || !is_writable($path)) {
             return false;
         }
         
