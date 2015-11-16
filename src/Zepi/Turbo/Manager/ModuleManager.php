@@ -211,6 +211,9 @@ class ModuleManager
      */
     public function deactivateModule($namespace)
     {
+        $namespace = Framework::prepareNamespace($namespace);
+
+        // If the module isn't activated we have nothing to deactivate
         if (!isset($this->_activatedModules[$namespace])) {
             return false;
         }
@@ -218,7 +221,7 @@ class ModuleManager
         // Load the module to deactivate it
         $namespace = Framework::prepareNamespace($namespace);
         $module = $this->getModule($namespace);
-        
+
         // If the module isn't initialized it isn't active
         if ($module === false) {
             return false;
