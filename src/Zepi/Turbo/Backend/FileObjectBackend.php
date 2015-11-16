@@ -72,7 +72,7 @@ class FileObjectBackend extends ObjectBackendAbstract
      */
     protected function _saveSerializedObject($serializedObject)
     {
-        if (file_exists($this->_path) && !is_writable($this->_path)) {
+        if (!is_writable($this->_path)) {
             throw new Exception('The file "' . $this->_path . '" isn\'t writable!');
         }
 
@@ -84,17 +84,11 @@ class FileObjectBackend extends ObjectBackendAbstract
      * 
      * @access protected
      * @return string
-     * 
-     * @throws Zepi\Turbo\Exception The file "$path" isn't readable!
      */
     protected function _loadSerializedObject()
     {
         if (!file_exists($this->_path)) {
             return '';
-        }
-        
-        if (!is_readable($this->_path)) {
-            throw new Exception('The file "' . $this->_path . '" isn\'t readable!');
         }
         
         return file_get_contents($this->_path);
