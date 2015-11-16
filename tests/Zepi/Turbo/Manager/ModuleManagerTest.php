@@ -29,7 +29,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
         
         $this->_fileObjectBackend->expects($this->exactly(2))
                                  ->method('loadObject')
-                                 ->willReturn(unserialize('a:1:{s:12:"\TestModule\";a:2:{s:7:"version";s:3:"1.0";s:4:"path";s:47:"/var/www/turbo/tests/modules-working/TestModule";}}'));
+                                 ->willReturn(unserialize('a:1:{s:12:"\TestModule\";a:2:{s:7:"version";s:3:"1.0";s:4:"path";s:47:"' . TESTS_ROOT_DIR . '/modules-working/TestModule";}}'));
         
         $this->_moduleManager = new \Zepi\Turbo\Manager\ModuleManager($this->_framework, $this->_fileObjectBackend);
         $this->_moduleManager->initializeModuleSystem();
