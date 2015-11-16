@@ -107,17 +107,18 @@ class DataSourceManager
      * Adds a data source to the repository
      * 
      * @access public 
-     * @param string $typeClass
      * @param string $driver
-     * @param string $class
+     * @param string $className
      */
-    public function addDataSource($typeClass, $driver, $class)
+    public function addDataSource($driver, $className)
     {
+        $typeClass = $this->_getTypeClass($className);
+
         if (!isset($this->_dataSources[$typeClass]) || !is_array($this->_dataSources[$typeClass])) {
             $this->_dataSources[$typeClass] = array();
         }
         
-        $this->_dataSources[$typeClass][$driver] = $class;
+        $this->_dataSources[$typeClass][$driver] = $className;
         $this->_saveDataSources();
         
         return true;
@@ -127,12 +128,14 @@ class DataSourceManager
      * Removes a data source from the repository
      * 
      * @access public
-     * @param string $typeClass
      * @param string $driver
+     * @param string $className
      * @return boolean
      */
-    public function removeDataSource($typeClass, $driver)
+    public function removeDataSource($driver, $className)
     {
+        $typeClass = $this->_getTypeClass($className);
+        
         if (!isset($this->_dataSources[$typeClass][$driver])) {
             return false;
         }
@@ -141,6 +144,32 @@ class DataSourceManager
         $this->_saveDataSources();
         
         return true;
+    }
+    
+    /**
+     * Returns the DataSource type class for the given class
+     * 
+     * @access public
+     * @param string $className
+     * @return string
+     * 
+     * @throws \Zepi\Turbo\Exception Data Source "{className}" does not implement the DataSourceInterface.
+     */
+    protected function _getTypeClass($className)
+    {
+        $implementedClasses = class_implements($className);
+        $frameworkDataSourceInterface = 'Zepi\\Turbo\\FrameworkInterface\\DataSourceInterface';
+
+        // If the class does not implement the DataSourceInterface we cannot use 
+        // this class as DataSource
+        if (!isset($implementedClasses[$frameworkDataSourceInterface])) {
+            throw new Exception('Data Source "' . $className . '" does not implement the DataSourceInterface.');
+        }
+        
+        // Remove the framework interface
+        unset($implementedClasses[$frameworkDataSourceInterface]);
+        
+        return Framework::prepareClassName(current($implementedClasses));
     }
     
     /**
