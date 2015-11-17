@@ -182,9 +182,9 @@ class RuntimeManager
     {
         $handlers = array();
         
-        foreach ( $this->_handlers[$type][$name] as $priority => $handlers ) {
-            foreach ( $handlers as $handlerName ) {
-                if ($type === self::EVENT && ! $this->_compareRequestInterface($request, $handlerName)) {
+        foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
+            foreach ($handlers as $handlerName) {
+                if ($type === self::EVENT && !$this->_compareRequestInterface($request, $handlerName)) {
                     continue;
                 }
                 
