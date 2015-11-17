@@ -147,10 +147,9 @@ class FileBackend
      *
      * @access public
      * @param string $additionalPath
-     * @param boolean $testDirectory
      * @return string
      */
-    protected function _realPath($additionalPath, $testDirectory = true)
+    protected function _realPath($additionalPath)
     {
         if (substr($additionalPath, 0, 1) === '/') {
             $path = $additionalPath;
