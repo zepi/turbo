@@ -180,19 +180,19 @@ class RuntimeManager
      */
     protected function _filterHandlers($type, $name, RequestAbstract $request)
     {
-        $handlers = array();
+        $filteredHandlers = array();
         
         foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
             foreach ($handlers as $handlerName) {
-                if ($type === self::EVENT && !$this->_compareRequestInterface($request, $handlerName)) {
+                if ($type === self::EVENT && !$this->_compareRequestWithInterface($request, $handlerName)) {
                     continue;
                 }
                 
-                $handlers[] = $handlerName;
+                $filteredHandlers[] = $handlerName;
             }
         }
-        
-        return array_unique($handlers);
+
+        return array_unique($filteredHandlers);
     }
     
     /**
@@ -205,20 +205,20 @@ class RuntimeManager
      * @param string $handlerName
      * @return boolean
      */
-    protected function _compareRequestInterface(RequestAbstract $request, $handlerName)
+    protected function _compareRequestWithInterface(RequestAbstract $request, $handlerName)
     {
         $implementedInterfaces = class_implements($handlerName, true);
-    	
+
         // If the event is a cli event but the request isn't a cli request
         // we skip this event
-        if (isset($implementedInterfaces['\\Zepi\\Turbo\\FrameworkInterface\\CliEventHandlerInterface'])
+        if (isset($implementedInterfaces['Zepi\\Turbo\\FrameworkInterface\\CliEventHandlerInterface'])
             && get_class($request) != 'Zepi\\Turbo\\Request\\CliRequest') {
             return false;
         }
 
         // If the event is a web event but the request isn't a web request
         // we skip this event
-        if (isset($implementedInterfaces['\\Zepi\\Turbo\\FrameworkInterface\\WebEventHandlerInterface'])
+        if (isset($implementedInterfaces['Zepi\\Turbo\\FrameworkInterface\\WebEventHandlerInterface'])
             && get_class($request) != 'Zepi\\Turbo\\Request\\WebRequest') {
             return false;
         }
