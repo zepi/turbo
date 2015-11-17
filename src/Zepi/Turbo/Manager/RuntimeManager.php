@@ -171,28 +171,28 @@ class RuntimeManager
     /**
      * Filters the handler and returns an single array with
      * all queued handlers
-     * 
+     *
      * @access protected
-     * @param string $type
-     * @param string $name
-     * @param RequestAbstract $request
+     * @param string $type            
+     * @param string $name            
+     * @param RequestAbstract $request            
      * @return array
      */
     protected function _filterHandlers($type, $name, RequestAbstract $request)
     {
-    	$handlers = array();
-    	
-    	foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
-   			foreach ($handlers as $handlerName) {
-   				if ($type === self::EVENT && !$this->_compareRequestInterface($request, $handlerName)) {
-    				continue;
-    			}
-    			    			
-    			$handlers[] = $handlerName;
-    		}
-    	}
-    	
-    	return array_unique($handlers);
+        $handlers = array();
+        
+        foreach ( $this->_handlers[$type][$name] as $priority => $handlers ) {
+            foreach ( $handlers as $handlerName ) {
+                if ($type === self::EVENT && ! $this->_compareRequestInterface($request, $handlerName)) {
+                    continue;
+                }
+                
+                $handlers[] = $handlerName;
+            }
+        }
+        
+        return array_unique($handlers);
     }
     
     /**
@@ -207,7 +207,7 @@ class RuntimeManager
      */
     protected function _compareRequestInterface(RequestAbstract $request, $handlerName)
     {
-    	$implementedInterfaces = class_implements($handlerName, true);
+        $implementedInterfaces = class_implements($handlerName, true);
     	
         // If the event is a cli event but the request isn't a cli request
         // we skip this event
