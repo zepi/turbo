@@ -6,9 +6,8 @@ Turbo - Speeds up your development process.
 [![codecov.io](https://codecov.io/github/zepi/turbo/coverage.svg?branch=master)](https://codecov.io/github/zepi/turbo?branch=master)
 
 # Installation
-1. Clone or download the git repository [zepi/turbo-boilerplate](https://github.com/zepi/turbo-boilerplate)
-2. Execute composer `composer update`
-3. Execute turbo `./turbo install`
+1. Create the project `composer create-project zepi/turbo-boilerplate /your/project/directory`
+2. Execute the turbo installation `./turbo install`
 
 # Features
 1. Modules: Everything is in a module. You can add your own modules or use modules from someone else.
