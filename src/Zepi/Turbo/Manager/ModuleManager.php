@@ -453,6 +453,11 @@ class ModuleManager
             $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.ini$/i');
             
             foreach ($regexIterator as $item) {
+                // If the module is in a tests directory don't use it
+                if (strpos($item->getPath(), '/tests/')) {
+                    continue;
+                }
+                
                 $moduleNamespace = $this->_getNamespaceFromModuleIni($item->getPath());
                 
                 if ($moduleNamespace === $namespace) {
