@@ -119,12 +119,13 @@ class ModuleManager
      * 
      * @access public
      * @param string $directory
+     * @param string $excludePattern
      * @return boolean
      */
-    public function registerModuleDirectory($directory)
+    public function registerModuleDirectory($directory, $excludePattern = '/\/tests\//')
     {
-        if (!in_array($directory, $this->_moduleDirectories)) {
-            $this->_moduleDirectories[] = $directory;
+        if (!isset($this->_moduleDirectories[$directory])) {
+            $this->_moduleDirectories[$directory] = $excludePattern;
             
             return true;
         }
@@ -447,14 +448,14 @@ class ModuleManager
         $targetPath = false;
         
         // Iterate trough the module directories
-        foreach ($this->_moduleDirectories as $directory) {
+        foreach ($this->_moduleDirectories as $directory => $excludePattern) {
             $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory);
             $iterator = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
             $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.ini$/i');
             
             foreach ($regexIterator as $item) {
                 // Ignore modules which are located inside a tests directory
-                if (strpos($item->getPath(), '/tests/') !== false) {
+                if ($excludePattern !== false && preg_match($excludePattern, $item->getPath())) {
                     continue;
                 }
                 

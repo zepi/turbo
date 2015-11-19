@@ -245,10 +245,6 @@ class RouteManager
                     $routeParams[] = $targetPart * 1;
                 } else if ($part === '[s]' && is_string($targetPart)) {
                     $routeParams[] = $targetPart;
-                } else {
-                    // If the value isn't okey for the given data type we 
-                    // haven't an equal route.
-                    return false;
                 }
             } else if ($part !== $targetPart) {
                 // The part isn't equal == the route can't be equal

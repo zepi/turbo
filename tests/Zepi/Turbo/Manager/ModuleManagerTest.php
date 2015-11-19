@@ -35,15 +35,15 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
         $this->_moduleManager = new \Zepi\Turbo\Manager\ModuleManager($this->_framework, $this->_fileObjectBackend);
         $this->_moduleManager->initializeModuleSystem();
         
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
     
         $this->_moduleManager->initializeModuleSystem();
     }
     
     public function testActivateRegisterAModuleDirectoryTwoTimes()
     {
-        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
-        $resultTwo = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
+        $resultTwo = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
     
         $this->assertTrue($resultOne);
         $this->assertFalse($resultTwo);
@@ -55,7 +55,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
                                  ->method('saveObject')
                                  ->with($this->anything());
         
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $this->_moduleManager->activateModule('TestModule');
         $modules = $this->_moduleManager->getModules();
         
@@ -69,7 +69,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $resultOne = $this->_moduleManager->activateModule('TestModule');
         $resultTwo = $this->_moduleManager->activateModule('TestModule');
     
@@ -82,7 +82,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testActivateNotExistingModule()
     {
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $resultTwo = $this->_moduleManager->activateModule('TestModule2');
     }
     
@@ -91,8 +91,17 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testActivateModuleWithoutModuleClass()
     {
-        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-not-working/');
+        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-not-working/', false);
         $this->_moduleManager->activateModule('WrongModule2');
+    }
+    
+    /**
+     * @expectedException \Zepi\Turbo\Exception
+     */
+    public function testActivateModuleInTestsDirectory()
+    {
+        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->activateModule('TestModule');
     }
     
     public function testDeactivateModule()
@@ -101,7 +110,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
                                  ->method('saveObject')
                                  ->with($this->anything());
         
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $this->_moduleManager->activateModule('TestModule');
     
         $this->_moduleManager->deactivateModule('TestModule');
@@ -113,7 +122,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     
     public function testDeactivateNotActivatedModule()
     {
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
     
         $result = $this->_moduleManager->deactivateModule('TestModule');
     
@@ -122,7 +131,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     
     public function testGetModules()
     {
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $this->_moduleManager->activateModule('TestModule');
         $modules = $this->_moduleManager->getModules();
 
@@ -132,7 +141,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     
     public function testGetModule()
     {
-        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $this->_moduleManager->activateModule('TestModule');
     
         $this->assertInstanceOf('\\TestModule\\Module', $this->_moduleManager->getModule('\\TestModule\\'));
@@ -140,7 +149,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     
     public function testGetWrongModule()
     {
-        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $resultOne = $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $this->_moduleManager->activateModule('TestModule');
     
         $this->assertFalse($this->_moduleManager->getModule('\\TestModule2\\'));
@@ -166,7 +175,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testNotCorrectModuleIniWillThrowException()
     {
-        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-not-working/');
+        $this->_moduleManager->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-not-working/', false);
     
         $this->_moduleManager->activateModule('WrongModule3');
     }

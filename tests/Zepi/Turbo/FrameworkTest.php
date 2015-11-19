@@ -120,7 +120,7 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
     public function testActivateModuleAndGetInstanceOfModuleClass()
     {
         $framework = \Zepi\Turbo\Framework::getFrameworkInstance(TESTS_ROOT_DIR . '/');
-        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $framework->getModuleManager()->activateModule('TestModule');
     
         $this->assertInstanceOf('\\TestModule\\EmptyBackend', $framework->getInstance('\\TestModule\\EmptyBackend'));
@@ -132,7 +132,7 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
     public function testActivateModuleAndGetInstanceOfNotExistingModuleClass()
     {
         $framework = \Zepi\Turbo\Framework::getFrameworkInstance(TESTS_ROOT_DIR . '/');
-        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $framework->getModuleManager()->activateModule('TestModule');
     
         $framework->getInstance('\\TestModule\\EmptyBackend2');
@@ -144,7 +144,7 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
     public function testActivateModuleAndGetInstanceOfNotCorrectlyInitiatedModuleClass()
     {
         $framework = \Zepi\Turbo\Framework::getFrameworkInstance(TESTS_ROOT_DIR . '/');
-        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $framework->getModuleManager()->activateModule('TestModule');
     
         $framework->getInstance('\\TestModule\\EmptyBackend3');
@@ -153,7 +153,7 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
     public function testFrameworkExecuteWithValidRoute()
     {
         $framework = \Zepi\Turbo\Framework::getFrameworkInstance(TESTS_ROOT_DIR . '/');
-        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $framework->getModuleManager()->activateModule('TestModule');
         
         $framework->getRequest()->setRoute('executionTest');
@@ -180,7 +180,7 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
     public function testFrameworkExecuteRouteNotFound()
     {
         $framework = \Zepi\Turbo\Framework::getFrameworkInstance(TESTS_ROOT_DIR . '/');
-        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/');
+        $framework->getModuleManager()->registerModuleDirectory(TESTS_ROOT_DIR . '/modules-working/', false);
         $framework->getModuleManager()->activateModule('TestModule');
         
         $framework->getRequest()->setRoute('executionTest2');
