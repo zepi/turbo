@@ -239,13 +239,7 @@ class RouteManager
             $targetPart = $targetRouteParts[$pos];
 
             if (in_array($part, $dataTypes) && $targetPart != '') {
-                // If the part is a data type we need this route parameter
-                if ($part === '[d]' && is_numeric($targetPart)) {
-                    // Transform the value into the correct data type
-                    $routeParams[] = $targetPart * 1;
-                } else if ($part === '[s]' && is_string($targetPart)) {
-                    $routeParams[] = $targetPart;
-                }
+                $routeParams[] = $this->_parseRouteParam($part, $targetPart);
             } else if ($part !== $targetPart) {
                 // The part isn't equal == the route can't be equal
                 return false;
@@ -256,5 +250,24 @@ class RouteManager
         $request->setRouteParams($routeParams);
         
         return true;
+    }
+    
+    /**
+     * Parses the route param data to the correct format
+     * 
+     * @access protected
+     * @param string $part
+     * @param string $targetPart
+     * @return mixed
+     */
+    protected function _parseRouteParam($part, $targetPart)
+    {
+        // If the part is a data type we need this route parameter
+        if ($part === '[d]' && is_numeric($targetPart)) {
+            // Transform the value into the correct data type
+            return $targetPart * 1;
+        } else if ($part === '[s]' && is_string($targetPart)) {
+            return $targetPart;
+        }
     }
 }
