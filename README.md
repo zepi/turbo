@@ -1,4 +1,4 @@
-# turbo
+# zepi Turbo
 Turbo - Speeds up your development process.
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zepi/turbo/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/zepi/turbo/?branch=master)
