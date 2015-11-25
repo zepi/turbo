@@ -159,7 +159,7 @@ class ModuleManagerTest extends \PHPUnit_Framework_TestCase
     {
         $properties = $this->_moduleManager->getModuleProperties(TESTS_ROOT_DIR . '/modules-working/TestModule/');
         
-        $this->assertArrayHasKey('module', $properties);
+        $this->assertObjectHasAttribute('module', $properties);
     }
     
     /**

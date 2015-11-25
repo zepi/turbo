@@ -189,8 +189,8 @@ class ModuleManager
         }
         
         // Get the version
-        $moduleProperties = $this->_parseModuleIni($path);
-        $version = $moduleProperties['module']['version'];
+        $moduleProperties = $this->_parseModuleJson($path);
+        $version = $moduleProperties->module->version;
         
         $module = $this->_initializeModule($path, $activateDependencies);
         $module->activate($version, 0);
@@ -276,43 +276,43 @@ class ModuleManager
     public function reactivateModules()
     {
         foreach ($this->_modules as $module) {
-            $moduleProperties = $this->_parseModuleIni($module->getDirectory());
-            $version = $moduleProperties['module']['version'];
+            $moduleProperties = $this->_parseModuleJson($module->getDirectory());
+            $version = $moduleProperties->module->version;
 
-            $this->activateModule($moduleProperties['module']['namespace'], true);
+            $this->activateModule($moduleProperties->module->namespace, true);
             $module->activate($version, $version);
         }
     }
     
     /**
-     * Returns an array with the properties for the given path.
+     * Returns an object with the properties for the given path.
      * 
      * @access public
      * @param string $path
-     * @return array
+     * @return \stdClass
      */
     public function getModuleProperties($path)
     {
-        return $this->_parseModuleIni($path);
+        return $this->_parseModuleJson($path);
     }
     
     /**
-     * Returns an array with the properties of the module from
-     * the Module.ini file in the given path.
+     * Returns an object with the properties of the module from
+     * the Module.json file in the given path.
      * 
      * @access protected
      * @param string $path
-     * @return array
+     * @return \stdClass
      * 
-     * @throws Zepi\Turbo\Exception Cannot find Module.ini in the path "$path".
+     * @throws Zepi\Turbo\Exception Cannot find Module.json in the path "$path".
      */
-    protected function _parseModuleIni($path)
+    protected function _parseModuleJson($path)
     {
-        if (!file_exists($path . '/Module.ini')) {
-            throw new Exception('Cannot find Module.ini in the path "' . $path . '".');
+        if (!file_exists($path . '/Module.json')) {
+            throw new Exception('Cannot find Module.json in the path "' . $path . '".');
         }
-        
-        $moduleProperties = parse_ini_file($path . '/Module.ini', true);
+
+        $moduleProperties = json_decode(file_get_contents($path . '/Module.json'));
         
         return $moduleProperties;
     }
@@ -326,15 +326,15 @@ class ModuleManager
      * 
      * @throws Zepi\Turbo\Exception The namespace is not set in the module properties for the Module in "$path".
      */
-    protected function _getNamespaceFromModuleIni($path)
+    protected function _getNamespaceFromModuleJson($path)
     {
-        $moduleProperties = $this->_parseModuleIni($path);
-        
-        if (!isset($moduleProperties['module']['namespace'])) {
+        $moduleProperties = $this->_parseModuleJson($path);
+
+        if (!isset($moduleProperties->module->namespace)) {
             throw new Exception('The namespace is not set in the module properties for the module in "' . $path . '".');
         }
         
-        return Framework::prepareNamespace($moduleProperties['module']['namespace']);
+        return Framework::prepareNamespace($moduleProperties->module->namespace);
     }
     
     /**
@@ -351,7 +351,7 @@ class ModuleManager
      */
     protected function _initializeModule($path, $activateDependencies = false)
     {
-        $moduleNamespace = $this->_getNamespaceFromModuleIni($path);
+        $moduleNamespace = $this->_getNamespaceFromModuleJson($path);
         $module = $this->getModule($moduleNamespace);
         
         // If the module is already initialized, return it
@@ -381,7 +381,7 @@ class ModuleManager
     }
 
     /**
-     * Loads the module.ini and checks it for dependencies. If the module has
+     * Loads the Module.json and checks it for dependencies. If the module has
      * dependencies the function will verify the modules and activate them
      * if the parameter $activateDependencies is set to true.
      * 
@@ -392,14 +392,14 @@ class ModuleManager
      */
     protected function _handleModuleDependencies($moduleNamespace, $path, $activateDependencies)
     {
-        $moduleProperties = $this->_parseModuleIni($path);
+        $moduleProperties = $this->_parseModuleJson($path);
 
         // If the ini file has no dependencies we have nothing to do...
-        if (!isset($moduleProperties['dependencies']) || count($moduleProperties['dependencies']) === 0) {
+        if (!isset($moduleProperties->dependencies) || count($moduleProperties->dependencies) === 0) {
             return;
         }
         
-        foreach ($moduleProperties['dependencies'] as $type => $dependencies) {
+        foreach ($moduleProperties->dependencies as $type => $dependencies) {
             switch ($type) {
                 case 'required':
                     $this->_handleRequiredDependencies($moduleNamespace, $dependencies, $activateDependencies);
@@ -451,7 +451,7 @@ class ModuleManager
         foreach ($this->_moduleDirectories as $directory => $excludePattern) {
             $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory);
             $iterator = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
-            $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.ini$/i');
+            $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.json$/i');
             
             foreach ($regexIterator as $item) {
                 // Ignore modules which are located inside a tests directory
@@ -459,7 +459,7 @@ class ModuleManager
                     continue;
                 }
                 
-                $moduleNamespace = $this->_getNamespaceFromModuleIni($item->getPath());
+                $moduleNamespace = $this->_getNamespaceFromModuleJson($item->getPath());
                 
                 if ($moduleNamespace === $namespace) {
                     $targetPath = $item->getPath();
