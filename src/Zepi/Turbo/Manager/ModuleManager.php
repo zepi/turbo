@@ -420,7 +420,7 @@ class ModuleManager
      */
     protected function _handleRequiredDependencies($moduleNamespace, $dependencies, $activateDependencies)
     {
-        foreach ($dependencies as $dependencyModuleNamespace) {
+        foreach ($dependencies as $dependencyModuleNamespace => $version) {
             $dependencyModuleNamespace = Framework::prepareNamespace($dependencyModuleNamespace);
             
             $module = $this->getModule($dependencyModuleNamespace);
