@@ -64,4 +64,33 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_response->hasOutput());
         $this->assertEquals('test-key abc', $this->_response->getOutput());
     }
+    
+    /**
+     * @runInSeparateProcess
+     */
+    public function testRedirectToRelative()
+    {
+        $this->_requestAbstract->expects($this->once())
+                               ->method('getFullRoute')
+                               ->with($this->anything())
+                               ->will($this->returnValue('http://location/test/abc/'));
+        
+        $this->_response->redirectTo('/test/abc/');
+        
+        $headers = xdebug_get_headers();
+        
+        $this->assertEquals('Location: http://location/test/abc/', $headers[0]);
+    }
+    
+    /**
+     * @runInSeparateProcess
+     */
+    public function testRedirectToAbsolute()
+    {
+        $this->_response->redirectTo('http://turbo.zepi.net/');
+    
+        $headers = xdebug_get_headers();
+    
+        $this->assertEquals('Location: http://turbo.zepi.net/', $headers[0]);
+    }
 }

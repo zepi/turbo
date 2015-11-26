@@ -202,7 +202,7 @@ class WebRequest extends RequestAbstract
      */
     public function getSession()
     {
-        if ($this->_session === false) {
+        if ($this->_session === null) {
             return false;
         }
         
