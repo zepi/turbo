@@ -197,11 +197,32 @@ class FileBackend
     {
         $directory = dirname($path);
         if (!file_exists($directory)) {
-            $result = mkdir($directory, 0755, true);
+            if (!is_writeable($this->_getExistingPath($directory))) {
+                throw new Exception('The directory "' . $directory . '" isn\'t writeable!');
+            }
+            
+            mkdir($directory, 0755, true);
+        }
+    }
     
-            if (!$result || !file_exists($directory)) {
-                throw new Exception('The directory "' . $directory . '" doesn\'t exists!');
+    /**
+     * Returns the existing part of a path
+     * 
+     * @access protected
+     * @param string $path
+     * @return string
+     */
+    protected function _getExistingPath($path)
+    {
+        $numberOfSlashes = substr_count($path, '/');
+        $existingPath = $path;
+        
+        for ($i = 0; $i < $numberOfSlashes; $i++) {
+            if (!file_exists($existingPath)) {
+                $existingPath = dirname($existingPath);
             }
         }
+        
+        return $existingPath;
     }
 }
