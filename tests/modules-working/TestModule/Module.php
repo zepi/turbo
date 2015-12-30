@@ -58,6 +58,8 @@ class Module extends ModuleAbstract
         } else if ($className === '\\TestModule\\EmptyBackend3') {
             return false;
         }
+        
+        return new $className();
     }
     
     /**
