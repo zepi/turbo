@@ -211,15 +211,86 @@ class Response
      * Set the Location header to redirect a request
      * 
      * @access public
-     * @param string $location
+     * @param string $target
      * @param integer $headerCode
+     * @param boolean $withOrigin
      */
-    public function redirectTo($location, $headerCode = 301)
+    public function redirectTo($target, $headerCode = 301, $withOrigin = false)
     {
-        if (strpos($location, 'http://') === false) {
-            $location = $this->_request->getFullRoute($location);
+        if (strpos($target, 'http://') === false) {
+            $target = $this->_request->getFullRoute($target);
         }
         
-        header("Location: " . $location, true, $headerCode);
+        if ($withOrigin) {
+            $origin = $this->_request->getFullRoute();
+            $additionalQuery = '_origin=' . base64_encode($origin);
+            
+            $parts = parse_url($target);
+            
+            if (!isset($parts['query'])) {
+                $parts['query'] = '';
+            } else if ($parts['query'] !== '') {
+                $parts['query'] .= '&';
+            }
+            
+            $parts['query'] .= $additionalQuery;
+            $target = $this->buildUrl($parts);
+        }
+        
+        header("Location: " . $target, true, $headerCode);
+    }
+    
+    /**
+     * Returns a full url for the given url parts array
+     * from the function `parse_url()`.
+     * 
+     * @access public
+     * @param array $urlParts
+     * @return string
+     */
+    public function buildUrl($urlParts)
+    {
+        $url = '';
+        $auth = false;
+        
+        if (isset($urlParts['scheme'])) {
+            $url .= $urlParts['scheme'] . '://';
+        }
+        
+        if (isset($urlParts['user'])) {
+            $url .= $urlParts['user'];
+            $auth = true;
+        }
+        
+        if (isset($urlParts['pass'])) {
+            $url .= ':' . $urlParts['pass'];
+            $auth = true;
+        }
+        
+        if ($auth) {
+            $url .= '@';
+        }
+        
+        if (isset($urlParts['host'])) {
+            $url .= $urlParts['host'];
+        }
+        
+        if (isset($urlParts['port'])) {
+            $url .= ':' . $urlParts['port'];
+        }
+        
+        if (isset($urlParts['path'])) {
+            $url .= $urlParts['path'];
+        }
+        
+        if (isset($urlParts['query'])) {
+            $url .= '?' . $urlParts['query'];
+        }
+        
+        if (isset($urlParts['fragment'])) {
+            $url .= '#' . $urlParts['fragment'];
+        }
+        
+        return $url;
     }
 }
