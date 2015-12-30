@@ -142,7 +142,7 @@ class RuntimeManager
         $request = $this->_framework->getRequest();
 
         foreach ($this->_filterHandlers($type, $name, $request) as $handlerName) {
-            $handler = new $handlerName();
+            $handler = $this->_framework->getInstance($handlerName);
                 
             $response = $this->_framework->getResponse();
             $response->setData('_executedType', $type);

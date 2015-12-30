@@ -397,7 +397,7 @@ class Framework
         }
         
         if (!is_object($instance)) {
-            throw new Exception('Instance isn\'t an object!');
+            throw new Exception('Instance for class name "' . $className . '" isn\'t an object!');
         }
         
         return $instance;

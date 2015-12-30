@@ -96,7 +96,7 @@ abstract class ModuleAbstract
      */
     public function getInstance($className)
     {
-        return false;
+        return new $className();
     }
     
     /**
