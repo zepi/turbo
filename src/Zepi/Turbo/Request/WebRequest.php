@@ -133,6 +133,18 @@ class WebRequest extends RequestAbstract
     }
     
     /**
+     * Removes all session data
+     * 
+     * @access public
+     */
+    public function clearSessionData()
+    {
+        foreach ($_SESSION as $key => $value) {
+            unset($_SESSION[$key]);
+        }
+    }
+    
+    /**
      * Returns the cookie value of the given key.
      * 
      * @access public
@@ -217,5 +229,6 @@ class WebRequest extends RequestAbstract
     public function removeSession()
     {
         $this->_session = null;
+        $this->clearSessionData();
     }
 }
