@@ -376,6 +376,7 @@ class Framework
      * 
      * @access public
      * @param string $className
+     * @return mixed
      * 
      * @throws \Zepi\Turbo\Exception Cannot find the module for the given class name.
      * @throws \Zepi\Turbo\Exception Instance isn't an object!
