@@ -136,7 +136,7 @@ class RuntimeManager
     protected function _executeItems($type, $name, $value = null)
     {
         if (!isset($this->_handlers[$type][$name])) {
-            return;
+            return $value;
         }
         
         $request = $this->_framework->getRequest();

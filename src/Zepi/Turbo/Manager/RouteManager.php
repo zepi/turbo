@@ -220,7 +220,7 @@ class RouteManager
 
         // Split the two routes into parts
         $routeParts = explode($request->getRouteDelimiter(), $route);
-        $targetRouteParts = explode($request->getRouteDelimiter(), $request->getRoute());
+        $targetRouteParts = explode($request->getRouteDelimiter(), trim($request->getRoute(), '/'));
         $numberOfTargetRouteParts = count($targetRouteParts);
         
         // If we have different number of parts between the two routes

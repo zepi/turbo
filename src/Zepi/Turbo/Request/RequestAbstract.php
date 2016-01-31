@@ -241,6 +241,10 @@ abstract class RequestAbstract
             $routePart = $delimiter . $routePart;
         }
         
+        if (substr($routePart, -1) !== '/' && strrpos($routePart, '.') < strrpos($routePart, '/')) {
+            $routePart .= '/';
+        }
+        
         return $this->_base . $routePart;
     }
     

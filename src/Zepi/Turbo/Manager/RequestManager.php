@@ -140,11 +140,18 @@ class RequestManager
     {
         $args = $_REQUEST;
         $params = array();
-        $route = $_REQUEST['_r'];
-        
-        // Remove the slash at the start and at the end of the route
-        $route = trim($route, '/');
 
+        $route = $_SERVER['REQUEST_URI'];
+        $posQuestionMark = strpos($route, '?');
+        if ($posQuestionMark !== false) {
+            $route = substr($route, 0, $posQuestionMark);
+        }
+        
+        $posIndex = strpos($route, 'index.php');
+        if ($posIndex !== false) {
+            $route = substr($route, $posIndex + strlen('index.php'));
+        }
+        
         // Transform the arguments
         foreach ($args as $key => $value) {
             if (is_numeric($value)) {
@@ -171,14 +178,51 @@ class RequestManager
             $routePosition = strpos($fullUrl, $route);
         }
 
+        $requestedUrl = $this->_getRequestedUrl();
         $base = substr($fullUrl, 0, $routePosition);
-        $locale = $this->_getLocale($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $headers = $this->_getHeaders($_SERVER);
+        $protocol = $_SERVER['SERVER_PROTOCOL'];
         
-        header('X-Accepted-Locale: ' . $locale);
-        
-        return new WebRequest($route, $params, $base, $locale, $isSsl);
+        $locale = 'en_US';
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $locale = $this->_getLocale($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        }
+
+        return new WebRequest($requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol);
+    }
+    
+    /**
+     * Returns the requested url
+     * 
+     * @access protected
+     * @return string
+     */
+    protected function _getRequestedUrl()
+    {
+        return $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
+    /**
+     * Returns an array with all headers of this request
+     * 
+     * @access protected
+     * @param array $params
+     * @return array
+     */
+    protected function _getHeaders($params)
+    {
+        $headers = array();
+        
+        foreach ($params as $name => $value) {
+            if (substr($name, 0, 5) === 'HTTP_') {
+                $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$key] = $value;
+            }
+        }
+        
+        return $headers;
+    }
+    
     /**
      * Returns the best acceptable locale from the language header.
      * 

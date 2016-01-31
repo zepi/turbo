@@ -458,7 +458,8 @@ class Framework
         
         // Get the event name for the request and execute the event
         $eventName = $this->_routeManager->getEventNameForRoute($this->_request);
-        
+        $eventName = $this->_runtimeManager->executeFilter('\\Zepi\\Turbo\\Filter\\VerifyEventName', $eventName);
+
         if ($eventName !== false && $eventName != '') {
             $this->_runtimeManager->executeEvent($eventName);
         } else {

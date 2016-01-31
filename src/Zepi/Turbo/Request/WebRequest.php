@@ -46,6 +46,24 @@ class WebRequest extends RequestAbstract
 {
     /**
      * @access protected
+     * @var string
+     */
+    protected $_requestedUrl;
+    
+    /**
+     * @access protected
+     * @var array
+     */
+    protected $_headers;
+    
+    /**
+     * @access protected
+     * @var string
+     */
+    protected $_protocol;
+    
+    /**
+     * @access protected
      * @var boolean
      */
     protected $_isSsl = false;
@@ -60,18 +78,35 @@ class WebRequest extends RequestAbstract
      * Constructs the object
      * 
      * @access public
+     * @param string $requestedUrl
      * @param string $route
      * @param array params
      * @param string $base
      * @param string $locale
      * @param boolean $isSsl
+     * @param array $headers
+     * @param string $protocol
      * @param array $data
      */
-    public function __construct($route, $params, $base, $locale, $isSsl, $data = array())
+    public function __construct($requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol, $data = array())
     {
         parent::__construct($route, $params, $base, $locale, $data);
         
+        $this->_requestedUrl = $requestedUrl;
         $this->_isSsl = $isSsl;
+        $this->_headers = $headers;
+        $this->_protocol = $protocol;
+    }
+    
+    /**
+     * Returns the requested url
+     * 
+     * @access public
+     * @return string
+     */
+    public function getRequestedUrl()
+    {
+        return $this->_requestedUrl;
     }
     
     /**
@@ -230,5 +265,43 @@ class WebRequest extends RequestAbstract
     {
         $this->_session = null;
         $this->clearSessionData();
+    }
+    
+    /**
+     * Returns the value for the given header key
+     * 
+     * @access public
+     * @param string $key
+     * @return false|mixed
+     */
+    public function getHeader($key)
+    {
+        if (!isset($this->_headers[$key])) {
+            return false;
+        }
+        
+        return $this->_headers[$key];
+    }
+    
+    /**
+     * Returns an array with all headers
+     * 
+     * @access public
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->_headers;
+    }
+    
+    /**
+     * Returns the protocol of the request
+     * 
+     * @access public
+     * @return string
+     */
+    public function getProtocol()
+    {
+        return $this->_protocol;
     }
 }
