@@ -241,7 +241,8 @@ abstract class RequestAbstract
             $routePart = $delimiter . $routePart;
         }
         
-        if (substr($routePart, -1) !== '/' && strrpos($routePart, '.') < strrpos($routePart, '/')) {
+        $posPoint = strrpos($routePart, '.');
+        if (substr($routePart, -1) !== '/' && ($posPoint === false || $posPoint < strrpos($routePart, '/'))) {
             $routePart .= '/';
         }
         

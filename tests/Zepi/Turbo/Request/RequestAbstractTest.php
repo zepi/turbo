@@ -6,7 +6,17 @@ class RequestAbstractTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->_request = new \Zepi\Turbo\Request\WebRequest('/test/abc', array('test' => 'abc'), 'http://localhost/', 'de_DE', true, array('abc' => 'test'));
+        $this->_request = new \Zepi\Turbo\Request\WebRequest(
+            'http://test.local/test/abc/', 
+            '/test/abc', 
+            array('test' => 'abc'), 
+            'http://localhost/', 
+            'de_DE', 
+            true, 
+            array('header' => 'header-value'),
+            'HTTP/1.1',
+            array('abc' => 'test')
+        );
     }
     
     public function testGetLocale()
@@ -59,13 +69,13 @@ class RequestAbstractTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->_request->getFullRoute();
     
-        $this->assertEquals('http://localhost/test/abc', $route);
+        $this->assertEquals('http://localhost/test/abc/', $route);
     }
     
     public function testGetFullRouteWithRoutePart()
     {
         $route = $this->_request->getFullRoute('home');
     
-        $this->assertEquals('http://localhost/home', $route);
+        $this->assertEquals('http://localhost/home/', $route);
     }
 }

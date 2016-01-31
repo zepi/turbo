@@ -10,7 +10,17 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         
         $_SESSION = array();
         
-        $this->_request = new \Zepi\Turbo\Request\WebRequest('/test/abc', array('test' => 'abc'), 'http://localhost/', 'de_DE', true, array('abc' => 'test'));
+        $this->_request = new \Zepi\Turbo\Request\WebRequest(
+            'http://test.local/test/abc/', 
+            '/test/abc', 
+            array('test' => 'abc'), 
+            'http://localhost/', 
+            'de_DE', 
+            true, 
+            array('header' => 'header-value'),
+            'HTTP/1.1',
+            array('abc' => 'test')
+        );
     }
     
     public function testGetRouteDelimiter()
