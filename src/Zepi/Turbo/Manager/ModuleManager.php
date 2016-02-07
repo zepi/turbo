@@ -449,10 +449,10 @@ class ModuleManager
         
         // Iterate trough the module directories
         foreach ($this->_moduleDirectories as $directory => $excludePattern) {
-            $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory);
+            $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
             $iterator = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
             $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.json$/i');
-            
+
             foreach ($regexIterator as $item) {
                 // Ignore modules which are located inside a tests directory
                 if ($excludePattern !== false && preg_match($excludePattern, $item->getPath())) {
