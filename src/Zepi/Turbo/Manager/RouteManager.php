@@ -217,7 +217,7 @@ class RouteManager
     {
         // Replace the normal route delimiter with the request route delimiter
         $route = str_replace('|', $request->getRouteDelimiter(), $route);
-
+        
         // Split the two routes into parts
         $routeParts = explode($request->getRouteDelimiter(), $route);
         $targetRouteParts = explode($request->getRouteDelimiter(), trim($request->getRoute(), '/'));

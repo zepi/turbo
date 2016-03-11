@@ -44,6 +44,17 @@ use \Zepi\Turbo\FrameworkInterface\SessionInterface;
  */
 class WebRequest extends RequestAbstract
 {
+    const METHOD_GET = 'GET';
+    const METHOD_POST = 'POST';
+    const METHOD_PUT = 'PUT';
+    const METHOD_DELETE = 'DELETE';
+    
+    /**
+     * @access protected
+     * @var string
+     */
+    protected $_method;
+    
     /**
      * @access protected
      * @var string
@@ -78,6 +89,7 @@ class WebRequest extends RequestAbstract
      * Constructs the object
      * 
      * @access public
+     * @param string $method
      * @param string $requestedUrl
      * @param string $route
      * @param array params
@@ -88,14 +100,26 @@ class WebRequest extends RequestAbstract
      * @param string $protocol
      * @param array $data
      */
-    public function __construct($requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol, $data = array())
+    public function __construct($method, $requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol, $data = array())
     {
         parent::__construct($route, $params, $base, $locale, $data);
         
+        $this->_method = $method;
         $this->_requestedUrl = $requestedUrl;
         $this->_isSsl = $isSsl;
         $this->_headers = $headers;
         $this->_protocol = $protocol;
+    }
+    
+    /**
+     * Returns the method of the request
+     * 
+     * @access public
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->_method;
     }
     
     /**

@@ -162,22 +162,21 @@ class RequestManager
             $params[$key] = $value;
         }
 
-        // Get the protocol
-        $proto = 'http';
+        // Generate the full url and extract the base
+        $scheme = $this->_getScheme();
+        $fullUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
         $isSsl = false;
-        if (isset($_SERVER['HTTPS'])) {
-            $proto = 'https';
+        if ($scheme == 'https') {
             $isSsl = true;
         }
-
-        // Generate the full url and extract the base
-        $fullUrl = $proto . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         
         $routePosition = strlen($fullUrl);
-        if ($route !== '') {
+        if ($route !== '' && $route !== '/') {
             $routePosition = strpos($fullUrl, $route);
         }
-
+        
+        $method = $_SERVER['REQUEST_METHOD'];
         $requestedUrl = $this->_getRequestedUrl();
         $base = substr($fullUrl, 0, $routePosition);
         $headers = $this->_getHeaders($_SERVER);
@@ -188,7 +187,30 @@ class RequestManager
             $locale = $this->_getLocale($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         }
 
-        return new WebRequest($requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol);
+        return new WebRequest($method, $requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol);
+    }
+    
+    /**
+     * Returns the scheme of the request
+     * 
+     * @return string
+     */
+    protected function _getScheme()
+    {
+        $scheme = '';
+        if (isset($_SERVER['REQUEST_SCHEME'])) {
+            $scheme = $_SERVER['REQUEST_SCHEME'];
+        } else if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {
+            $scheme = 'https';
+        } else {
+            if ($_SERVER['SERVER_PORT'] == 443) {
+                $scheme = 'https';
+            } else {
+                $scheme = 'http';
+            }
+        }
+        
+        return $scheme;
     }
     
     /**
@@ -199,7 +221,9 @@ class RequestManager
      */
     protected function _getRequestedUrl()
     {
-        return $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $scheme = $this->_getScheme();
+
+        return $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
     /**

@@ -245,7 +245,7 @@ abstract class RequestAbstract
         if (substr($routePart, -1) !== '/' && ($posPoint === false || $posPoint < strrpos($routePart, '/'))) {
             $routePart .= '/';
         }
-        
+
         return $this->_base . $routePart;
     }
     

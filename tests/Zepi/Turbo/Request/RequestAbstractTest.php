@@ -7,6 +7,7 @@ class RequestAbstractTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_request = new \Zepi\Turbo\Request\WebRequest(
+            'GET',
             'http://test.local/test/abc/', 
             '/test/abc', 
             array('test' => 'abc'), 

@@ -11,6 +11,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         $_SESSION = array();
         
         $this->_request = new \Zepi\Turbo\Request\WebRequest(
+            'GET',
             'http://test.local/test/abc/', 
             '/test/abc', 
             array('test' => 'abc'), 
