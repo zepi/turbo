@@ -95,14 +95,15 @@ class WebRequest extends RequestAbstract
      * @param array params
      * @param string $base
      * @param string $locale
+     * @param string $operatingSystem
      * @param boolean $isSsl
      * @param array $headers
      * @param string $protocol
      * @param array $data
      */
-    public function __construct($method, $requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol, $data = array())
+    public function __construct($method, $requestedUrl, $route, $params, $base, $locale, $operatingSystem, $isSsl, $headers, $protocol, $data = array())
     {
-        parent::__construct($route, $params, $base, $locale, $data);
+        parent::__construct($route, $params, $base, $locale, $operatingSystem, $data);
         
         $this->_method = $method;
         $this->_requestedUrl = $requestedUrl;

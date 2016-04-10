@@ -13,6 +13,7 @@ class RequestAbstractTest extends \PHPUnit_Framework_TestCase
             array('test' => 'abc'), 
             'http://localhost/', 
             'de_DE', 
+            'linux',
             true, 
             array('header' => 'header-value'),
             'HTTP/1.1',

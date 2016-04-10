@@ -42,6 +42,10 @@ namespace Zepi\Turbo\Request;
  */
 abstract class RequestAbstract
 {
+    const OS_LINUX = 'linux';
+    const OS_WINDOWS = 'windows';
+    const OS_UNKNOWN = 'unknown';
+    
     /**
      * @access protected
      * @var string
@@ -74,6 +78,12 @@ abstract class RequestAbstract
     
     /**
      * @access protected
+     * @var string
+     */
+    protected $_operatingSystem;
+    
+    /**
+     * @access protected
      * @var array
      */
     protected $_data = array();
@@ -86,12 +96,14 @@ abstract class RequestAbstract
      * @param array params
      * @param string $base
      * @param string $locale
+     * @param string $operatingSystem
      * @param array $data
      */
-    public function __construct($route, $params, $base, $locale, $data = array())
+    public function __construct($route, $params, $base, $locale, $operatingSystem, $data = array())
     {
         $this->_route = $route;
         $this->_locale = $locale;
+        $this->_operatingSystem = $operatingSystem;
         
         if (is_array($params)) {
             $this->_params = $params; 
@@ -258,5 +270,16 @@ abstract class RequestAbstract
     public function getLocale()
     {
         return $this->_locale;
+    }
+    
+    /**
+     * Returns the operating system of the machine
+     *
+     * @access public
+     * @return string
+     */
+    public function getOperatingSystem()
+    {
+        return $this->_operatingSystem;
     }
 }

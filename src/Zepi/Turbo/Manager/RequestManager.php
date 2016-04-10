@@ -38,6 +38,7 @@ namespace Zepi\Turbo\Manager;
 use \Zepi\Turbo\Framework;
 use \Zepi\Turbo\Request\CliRequest;
 use \Zepi\Turbo\Request\WebRequest;
+use Zepi\Turbo\Request\RequestAbstract;
 
 /**
  * The RequestManager parses the request params and creates
@@ -127,7 +128,9 @@ class RequestManager
         
         $base = $argv[0];
         
-        return new CliRequest($route, $params, $base, 'en_US');
+        $operatingSystem = $this->_getOperatingSystem();
+        
+        return new CliRequest($route, $params, $base, 'en_US', $operatingSystem);
     }
 
     /**
@@ -186,8 +189,29 @@ class RequestManager
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $locale = $this->_getLocale($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         }
+        
+        $operatingSystem = $this->_getOperatingSystem();
 
-        return new WebRequest($method, $requestedUrl, $route, $params, $base, $locale, $isSsl, $headers, $protocol);
+        return new WebRequest($method, $requestedUrl, $route, $params, $base, $locale, $operatingSystem, $isSsl, $headers, $protocol);
+    }
+    
+    /**
+     * Returns the name of the operating system
+     * 
+     * @access protected
+     * @return string
+     */
+    protected function _getOperatingSystem()
+    {
+        $osRaw = strtolower(PHP_OS);
+        
+        if (strpos($osRaw, 'linux') !== false) {
+            return RequestAbstract::OS_LINUX;
+        } else if (strpos($osRaw, 'windows') !== false) {
+            return RequestAbstract::OS_WINDOWS;
+        } else {
+            return RequestAbstract::OS_UNKNOWN;
+        }
     }
     
     /**
