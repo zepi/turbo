@@ -18,7 +18,7 @@ class RouteManagerTest extends \PHPUnit_Framework_TestCase
                                  ->getMock();
         
         $this->_request = $this->getMockBuilder('\\Zepi\\Turbo\\Request\\CliRequest')
-                               ->setConstructorArgs(array('test route', array(), '/', 'en'))
+                               ->setConstructorArgs(array('test route', array(), '/', 'en', 'linux'))
                                ->getMock();
 
         $this->_request->expects($this->any())
