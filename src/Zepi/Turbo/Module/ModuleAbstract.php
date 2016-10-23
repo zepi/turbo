@@ -48,19 +48,19 @@ abstract class ModuleAbstract
      * @access protected
      * @var Framework
      */
-    protected $_framework;
+    protected $framework;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_namespace;
+    protected $namespace;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_directory;
+    protected $directory;
     
     /**
      * Constructs the object
@@ -72,9 +72,9 @@ abstract class ModuleAbstract
      */
     public function __construct(Framework $framework, $namespace, $directory)
     {
-        $this->_framework = $framework;
-        $this->_namespace = $namespace;
-        $this->_directory = $directory;
+        $this->framework = $framework;
+        $this->namespace = $namespace;
+        $this->directory = $directory;
     }
     
     /**
@@ -125,7 +125,7 @@ abstract class ModuleAbstract
      */
     public function getNamespace()
     {
-        return $this->_namespace;
+        return $this->namespace;
     }
     
     /**
@@ -136,6 +136,6 @@ abstract class ModuleAbstract
      */
     public function getDirectory()
     {
-        return $this->_directory;
+        return $this->directory;
     }
 }

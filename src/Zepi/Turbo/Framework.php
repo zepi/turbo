@@ -58,73 +58,73 @@ class Framework
      * @access protected
      * @var Framework
      */
-    static protected $_instance;
+    static protected $instance;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_rootDirectory;
+    protected $rootDirectory;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_moduleDirectories = array();
+    protected $moduleDirectories = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_moduleNamespaces = array();
+    protected $moduleNamespaces = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_modules = array();
+    protected $modules = array();
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Manager\DataSourceManager
      */
-    protected $_dataSourceManager;
+    protected $dataSourceManager;
 
     /**
      * @access protected
      * @var \Zepi\Turbo\Manager\ModuleManager
      */
-    protected $_moduleManager;
+    protected $moduleManager;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Manager\RuntimeManager
      */
-    protected $_runtimeManager;
+    protected $runtimeManager;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Manager\RouteManager
      */
-    protected $_routeManager;
+    protected $routeManager;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Manager\RequestManager
      */
-    protected $_requestManager;
+    protected $requestManager;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Request\RequestAbstract
      */
-    protected $_request;
+    protected $request;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Response\Response
      */
-    protected $_response;
+    protected $response;
     
     /**
      * Constructs the object
@@ -134,7 +134,7 @@ class Framework
      */
     private function __construct($rootDirectory)
     {
-        $this->_rootDirectory = $rootDirectory;
+        $this->rootDirectory = $rootDirectory;
     }
     
     /**
@@ -147,12 +147,12 @@ class Framework
      */
     public static function getFrameworkInstance($rootDirectory)
     {
-        if (self::$_instance === null) {
-            self::$_instance = new Framework($rootDirectory);
-            self::$_instance->_initializeFramework();
+        if (self::$instance === null) {
+            self::$instance = new Framework($rootDirectory);
+            self::$instance->initializeFramework();
         }
         
-        return self::$_instance;
+        return self::$instance;
     }
     
     /**
@@ -163,7 +163,7 @@ class Framework
      */
     public static function resetFramework()
     {
-        self::$_instance = null;
+        self::$instance = null;
     }
     
     /**
@@ -174,7 +174,7 @@ class Framework
      */
     public function getRootDirectory()
     {
-        return $this->_rootDirectory;
+        return $this->rootDirectory;
     }
     
     /**
@@ -182,26 +182,26 @@ class Framework
      * 
      * @access protected
      */
-    protected function _initializeFramework()
+    protected function initializeFramework()
     {
-        $this->_registerAutoloader();
+        $this->registerAutoloader();
         
-        $this->_requestManager = new RequestManager($this);
-        $this->_request = $this->_requestManager->buildRequest();
+        $this->requestManager = new RequestManager($this);
+        $this->request = $this->requestManager->buildRequest();
         
-        $this->_response = new Response($this->_request);
+        $this->response = new Response($this->request);
         
-        $this->_dataSourceManager = new DataSourceManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualDataSourceBackend'));
-        $this->_dataSourceManager->initializeDataSourceManager();
+        $this->dataSourceManager = new DataSourceManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualDataSourceBackend'));
+        $this->dataSourceManager->initializeDataSourceManager();
         
-        $this->_moduleManager = new ModuleManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualModuleBackend'));
-        $this->_moduleManager->initializeModuleSystem();
+        $this->moduleManager = new ModuleManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualModuleBackend'));
+        $this->moduleManager->initializeModuleSystem();
         
-        $this->_runtimeManager = new RuntimeManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualHandlerBackend'));
-        $this->_runtimeManager->initializeManager();
+        $this->runtimeManager = new RuntimeManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualHandlerBackend'));
+        $this->runtimeManager->initializeManager();
         
-        $this->_routeManager = new RouteManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualRouteBackend'));
-        $this->_routeManager->initializeRoutingTable();
+        $this->routeManager = new RouteManager($this, $this->getInstance('Zepi\\Turbo\\Backend\\VirtualRouteBackend'));
+        $this->routeManager->initializeRoutingTable();
     }
     
     /**
@@ -212,7 +212,7 @@ class Framework
      */
     public function getDataSourceManager()
     {
-        return $this->_dataSourceManager;
+        return $this->dataSourceManager;
     }
 
     /**
@@ -223,7 +223,7 @@ class Framework
      */
     public function getModuleManager()
     {
-        return $this->_moduleManager;
+        return $this->moduleManager;
     }
     
     /**
@@ -234,7 +234,7 @@ class Framework
      */
     public function getRuntimeManager()
     {
-        return $this->_runtimeManager;
+        return $this->runtimeManager;
     }
     
     /**
@@ -245,7 +245,7 @@ class Framework
      */
     public function getRouteManager()
     {
-        return $this->_routeManager;
+        return $this->routeManager;
     }
     
     /**
@@ -256,7 +256,7 @@ class Framework
      */
     public function getRequestManager()
     {
-        return $this->_requestManager;
+        return $this->requestManager;
     }
     
     /**
@@ -267,7 +267,7 @@ class Framework
      */
     public function getRequest()
     {
-        return $this->_request;
+        return $this->request;
     }
     
     /**
@@ -278,7 +278,7 @@ class Framework
      */
     public function getResponse()
     {
-        return $this->_response;
+        return $this->response;
     }
     
     /**
@@ -286,7 +286,7 @@ class Framework
      * 
      * @access protected
      */
-    protected function _registerAutoloader()
+    protected function registerAutoloader()
     {
         spl_autoload_register(array($this, 'loadClass'));
     }
@@ -354,7 +354,7 @@ class Framework
             $path = $sourceDirectory . str_replace('\\', '/', $className) . '.php';
         } else {
             // The class isn't from the framework, so we need the module for the given class name
-            $module = $this->_moduleManager->getModuleByClassName($className);
+            $module = $this->moduleManager->getModuleByClassName($className);
             
             if ($module !== false) {
                 $fileName = substr($className, strlen($module->getNamespace()));
@@ -386,9 +386,9 @@ class Framework
         $className = self::prepareClassName($className);
         
         if (strpos($className, '\\Zepi\\Turbo') === 0) {
-            $instance = $this->_getInstance($className);
+            $instance = $this->getCoreInstance($className);
         } else {
-            $module = $this->_moduleManager->getModuleByClassName($className);
+            $module = $this->moduleManager->getModuleByClassName($className);
             
             if ($module === false) {
                 throw new Exception('Cannot find the module for the given class name "' . $className . '".');
@@ -413,25 +413,25 @@ class Framework
      * 
      * @throws \Zepi\Turbo\Exception Class "{className}" is not defined.
      */
-    protected function _getInstance($className)
+    protected function getCoreInstance($className)
     {
         $className = self::prepareClassName($className);
 
         switch ($className) {
             case '\\Zepi\\Turbo\\Backend\\VirtualModuleBackend':
-                $path = $this->_rootDirectory . '/data/modules.data';
+                $path = $this->rootDirectory . '/data/modules.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
                 break;
             case '\\Zepi\\Turbo\\Backend\\VirtualHandlerBackend':
-                $path = $this->_rootDirectory . '/data/handlers.data';
+                $path = $this->rootDirectory . '/data/handlers.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
                 break;
             case '\\Zepi\\Turbo\\Backend\\VirtualRouteBackend':
-                $path = $this->_rootDirectory . '/data/routes.data';
+                $path = $this->rootDirectory . '/data/routes.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
                 break;
             case '\\Zepi\\Turbo\\Backend\\VirtualDataSourceBackend':
-                $path = $this->_rootDirectory . '/data/data-sources.data';
+                $path = $this->rootDirectory . '/data/data-sources.data';
                 return new \Zepi\Turbo\Backend\FileObjectBackend($path);
                 break;
             default:
@@ -454,31 +454,31 @@ class Framework
     public function execute()
     {
         // Execute the before execution event
-        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeExecution');
+        $this->runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeExecution');
         
         // Get the event name for the request and execute the event
-        $eventName = $this->_routeManager->getEventNameForRoute($this->_request);
-        $eventName = $this->_runtimeManager->executeFilter('\\Zepi\\Turbo\\Filter\\VerifyEventName', $eventName);
+        $eventName = $this->routeManager->getEventNameForRoute($this->request);
+        $eventName = $this->runtimeManager->executeFilter('\\Zepi\\Turbo\\Filter\\VerifyEventName', $eventName);
 
         if ($eventName !== false && $eventName != '') {
-            $this->_runtimeManager->executeEvent($eventName);
+            $this->runtimeManager->executeEvent($eventName);
         } else {
-            $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\RouteNotFound');
+            $this->runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\RouteNotFound');
         }
         
         // Execute the after execution event
-        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterExecution');
+        $this->runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterExecution');
 
         // Finalize the output
-        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\FinalizeOutput');
+        $this->runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\FinalizeOutput');
         
         // Execute the before output event
-        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeOutput');
+        $this->runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\BeforeOutput');
         
         // Print the output
-        echo $this->_response->getOutput();
+        echo $this->response->getOutput();
         
         // Execute the after output event
-        $this->_runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterOutput');
+        $this->runtimeManager->executeEvent('\\Zepi\\Turbo\\Event\\AfterOutput');
     }
 }

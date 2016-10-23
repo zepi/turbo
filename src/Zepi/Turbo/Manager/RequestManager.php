@@ -53,7 +53,7 @@ class RequestManager
      * @access protected
      * @var Framework
      */
-    protected $_framework;
+    protected $framework;
     
     /**
      * Constructs the object
@@ -63,7 +63,7 @@ class RequestManager
      */
     public function __construct(Framework $framework)
     {
-        $this->_framework = $framework;
+        $this->framework = $framework;
     }
     
     /**
@@ -75,9 +75,9 @@ class RequestManager
     public function buildRequest()
     {
         if (php_sapi_name() === 'cli') {
-            return $this->_buildCliRequest();
+            return $this->buildCliRequest();
         } else {
-            return $this->_buildWebRequest();
+            return $this->buildWebRequest();
         }
     }
     
@@ -87,7 +87,7 @@ class RequestManager
      * @access protected
      * @return \Zepi\Turbo\Request\CliRequest
      */
-    protected function _buildCliRequest()
+    protected function buildCliRequest()
     {
         global $argv;
         
@@ -128,7 +128,7 @@ class RequestManager
         
         $base = $argv[0];
         
-        $operatingSystem = $this->_getOperatingSystem();
+        $operatingSystem = $this->getOperatingSystem();
         
         return new CliRequest($route, $params, $base, 'en_US', $operatingSystem);
     }
@@ -139,7 +139,7 @@ class RequestManager
      * @access protected
      * @return \Zepi\Turbo\Request\WebRequest
      */
-    protected function _buildWebRequest()
+    protected function buildWebRequest()
     {
         $args = $_REQUEST;
         $params = array();
@@ -166,7 +166,7 @@ class RequestManager
         }
 
         // Generate the full url and extract the base
-        $scheme = $this->_getScheme();
+        $scheme = $this->getScheme();
         $fullUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         $isSsl = false;
@@ -180,17 +180,17 @@ class RequestManager
         }
         
         $method = $_SERVER['REQUEST_METHOD'];
-        $requestedUrl = $this->_getRequestedUrl();
+        $requestedUrl = $this->getRequestedUrl();
         $base = substr($fullUrl, 0, $routePosition);
-        $headers = $this->_getHeaders($_SERVER);
+        $headers = $this->getHeaders($_SERVER);
         $protocol = $_SERVER['SERVER_PROTOCOL'];
         
         $locale = 'en_US';
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $locale = $this->_getLocale($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            $locale = $this->getLocale($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         }
         
-        $operatingSystem = $this->_getOperatingSystem();
+        $operatingSystem = $this->getOperatingSystem();
 
         return new WebRequest($method, $requestedUrl, $route, $params, $base, $locale, $operatingSystem, $isSsl, $headers, $protocol);
     }
@@ -201,7 +201,7 @@ class RequestManager
      * @access protected
      * @return string
      */
-    protected function _getOperatingSystem()
+    protected function getOperatingSystem()
     {
         $osRaw = strtolower(PHP_OS);
         
@@ -219,7 +219,7 @@ class RequestManager
      * 
      * @return string
      */
-    protected function _getScheme()
+    protected function getScheme()
     {
         $scheme = '';
         if (isset($_SERVER['REQUEST_SCHEME'])) {
@@ -243,9 +243,9 @@ class RequestManager
      * @access protected
      * @return string
      */
-    protected function _getRequestedUrl()
+    protected function getRequestedUrl()
     {
-        $scheme = $this->_getScheme();
+        $scheme = $this->getScheme();
 
         return $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
@@ -257,7 +257,7 @@ class RequestManager
      * @param array $params
      * @return array
      */
-    protected function _getHeaders($params)
+    protected function getHeaders($params)
     {
         $headers = array();
         
@@ -278,7 +278,7 @@ class RequestManager
      * @param string $acceptLanguageHeader
      * @return string
      */
-    protected function _getLocale($acceptLanguageHeader)
+    protected function getLocale($acceptLanguageHeader)
     {
         $acceptLanguageHeader = str_replace('-', '_', $acceptLanguageHeader);
         $locales = explode(',', $acceptLanguageHeader);

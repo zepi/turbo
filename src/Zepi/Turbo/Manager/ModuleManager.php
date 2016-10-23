@@ -55,31 +55,31 @@ class ModuleManager
      * @access protected
      * @var Framework
      */
-    protected $_framework;
+    protected $framework;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Backend\ObjectBackendAbstract
      */
-    protected $_moduleObjectBackend;
+    protected $moduleObjectBackend;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_moduleDirectories = array();
+    protected $moduleDirectories = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_activatedModules = array();
+    protected $activatedModules = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_modules = array();
+    protected $modules = array();
 
     /**
      * Constructs the object
@@ -90,8 +90,8 @@ class ModuleManager
      */
     public function __construct(Framework $framework, ObjectBackendAbstract $moduleObjectBackend)
     {
-        $this->_framework = $framework;
-        $this->_moduleObjectBackend = $moduleObjectBackend;
+        $this->framework = $framework;
+        $this->moduleObjectBackend = $moduleObjectBackend;
     }
     
     /**
@@ -102,15 +102,15 @@ class ModuleManager
      */
     public function initializeModuleSystem()
     {
-        $activatedModules = $this->_moduleObjectBackend->loadObject();
+        $activatedModules = $this->moduleObjectBackend->loadObject();
         if (!is_array($activatedModules)) {
             $activatedModules = array();
         }
         
-        $this->_activatedModules = $activatedModules;
+        $this->activatedModules = $activatedModules;
         
-        foreach ($this->_activatedModules as $activatedModule) {
-            $this->_initializeModule($activatedModule['path']);
+        foreach ($this->activatedModules as $activatedModule) {
+            $this->initializeModule($activatedModule['path']);
         }
     }
     
@@ -124,8 +124,8 @@ class ModuleManager
      */
     public function registerModuleDirectory($directory, $excludePattern = '/\/tests\//')
     {
-        if (!isset($this->_moduleDirectories[$directory])) {
-            $this->_moduleDirectories[$directory] = $excludePattern;
+        if (!isset($this->moduleDirectories[$directory])) {
+            $this->moduleDirectories[$directory] = $excludePattern;
             
             return true;
         }
@@ -141,7 +141,7 @@ class ModuleManager
      */
     public function getModules()
     {
-        return $this->_modules;
+        return $this->modules;
     }
     
     /**
@@ -154,11 +154,11 @@ class ModuleManager
      */
     public function getModule($namespace)
     {
-        if (!isset($this->_modules[$namespace])) {
+        if (!isset($this->modules[$namespace])) {
             return false;
         }
         
-        return $this->_modules[$namespace];
+        return $this->modules[$namespace];
     }
     
     /**
@@ -178,26 +178,26 @@ class ModuleManager
         $namespace = Framework::prepareNamespace($namespace);
 
         // If the module already is activated we won't activate it again
-        if (isset($this->_activatedModules[$namespace])) {
+        if (isset($this->activatedModules[$namespace])) {
             return true;
         }
         
         // Search the path for the module and initialize it
-        $path = $this->_searchModulePath($namespace);
+        $path = $this->searchModulePath($namespace);
         if ($path === false) {
             throw new Exception('Can not find the module "' . $namespace . '".');
         }
         
         // Get the version
-        $moduleProperties = $this->_parseModuleJson($path);
+        $moduleProperties = $this->parseModuleJson($path);
         $version = $moduleProperties->module->version;
         
-        $module = $this->_initializeModule($path, $activateDependencies);
+        $module = $this->initializeModule($path, $activateDependencies);
         $module->activate($version, 0);
         
         // Save the path in the activated modules array
-        $this->_activatedModules[$namespace] = array('version' => $version, 'path' => $path);
-        $this->_saveActivatedModules();
+        $this->activatedModules[$namespace] = array('version' => $version, 'path' => $path);
+        $this->saveActivatedModules();
         
         return true;
     }
@@ -215,7 +215,7 @@ class ModuleManager
         $namespace = Framework::prepareNamespace($namespace);
 
         // If the module isn't activated we have nothing to deactivate
-        if (!isset($this->_activatedModules[$namespace])) {
+        if (!isset($this->activatedModules[$namespace])) {
             return false;
         }
         
@@ -232,9 +232,9 @@ class ModuleManager
         $module->deactivate();
         
         // Remove the module and save the module cache
-        unset($this->_activatedModules[$namespace]);
-        unset($this->_modules[$namespace]);
-        $this->_saveActivatedModules();
+        unset($this->activatedModules[$namespace]);
+        unset($this->modules[$namespace]);
+        $this->saveActivatedModules();
         
         return true;
     }
@@ -253,7 +253,7 @@ class ModuleManager
         
         $className = Framework::prepareClassName($className);
         
-        foreach ($this->_modules as $moduleNamespace => $module) {
+        foreach ($this->modules as $moduleNamespace => $module) {
             $moduleNamespace = Framework::prepareNamespace($moduleNamespace);
             $sameNamespace = strpos($className, $moduleNamespace);
             $length = strlen($moduleNamespace);
@@ -275,8 +275,8 @@ class ModuleManager
      */
     public function reactivateModules()
     {
-        foreach ($this->_modules as $module) {
-            $moduleProperties = $this->_parseModuleJson($module->getDirectory());
+        foreach ($this->modules as $module) {
+            $moduleProperties = $this->parseModuleJson($module->getDirectory());
             $version = $moduleProperties->module->version;
 
             $this->activateModule($moduleProperties->module->namespace, true);
@@ -293,7 +293,7 @@ class ModuleManager
      */
     public function getModuleProperties($path)
     {
-        return $this->_parseModuleJson($path);
+        return $this->parseModuleJson($path);
     }
     
     /**
@@ -306,7 +306,7 @@ class ModuleManager
      * 
      * @throws Zepi\Turbo\Exception Cannot find Module.json in the path "$path".
      */
-    protected function _parseModuleJson($path)
+    protected function parseModuleJson($path)
     {
         if (!file_exists($path . '/Module.json')) {
             throw new Exception('Cannot find Module.json in the path "' . $path . '".');
@@ -326,9 +326,9 @@ class ModuleManager
      * 
      * @throws Zepi\Turbo\Exception The namespace is not set in the module properties for the Module in "$path".
      */
-    protected function _getNamespaceFromModuleJson($path)
+    protected function getNamespaceFromModuleJson($path)
     {
-        $moduleProperties = $this->_parseModuleJson($path);
+        $moduleProperties = $this->parseModuleJson($path);
 
         if (!isset($moduleProperties->module->namespace)) {
             throw new Exception('The namespace is not set in the module properties for the module in "' . $path . '".');
@@ -349,9 +349,9 @@ class ModuleManager
      * 
      * @throws Zepi\Turbo\Exception The module "$path" is not valid
      */
-    protected function _initializeModule($path, $activateDependencies = false)
+    protected function initializeModule($path, $activateDependencies = false)
     {
-        $moduleNamespace = $this->_getNamespaceFromModuleJson($path);
+        $moduleNamespace = $this->getNamespaceFromModuleJson($path);
         $module = $this->getModule($moduleNamespace);
         
         // If the module is already initialized, return it
@@ -365,15 +365,15 @@ class ModuleManager
         }
 
         // Look for dependencies and warn the user or activate the dependencies
-        $this->_handleModuleDependencies($moduleNamespace, $path, $activateDependencies);
+        $this->handleModuleDependencies($moduleNamespace, $path, $activateDependencies);
         
         // Load the module
         require_once($path . '/Module.php');
         $moduleClassName = Framework::prepareClassName($moduleNamespace . 'Module');
         
         // Initialize the module
-        $module = new $moduleClassName($this->_framework, $moduleNamespace, $path);
-        $this->_modules[$moduleNamespace] = $module;
+        $module = new $moduleClassName($this->framework, $moduleNamespace, $path);
+        $this->modules[$moduleNamespace] = $module;
         
         $module->initialize();
         
@@ -390,9 +390,9 @@ class ModuleManager
      * @param string $path
      * @param boolean $activateDependencies
      */
-    protected function _handleModuleDependencies($moduleNamespace, $path, $activateDependencies)
+    protected function handleModuleDependencies($moduleNamespace, $path, $activateDependencies)
     {
-        $moduleProperties = $this->_parseModuleJson($path);
+        $moduleProperties = $this->parseModuleJson($path);
 
         // If the ini file has no dependencies we have nothing to do...
         if (!isset($moduleProperties->dependencies) || count($moduleProperties->dependencies) === 0) {
@@ -402,7 +402,7 @@ class ModuleManager
         foreach ($moduleProperties->dependencies as $type => $dependencies) {
             switch ($type) {
                 case 'required':
-                    $this->_handleRequiredDependencies($moduleNamespace, $dependencies, $activateDependencies);
+                    $this->handleRequiredDependencies($moduleNamespace, $dependencies, $activateDependencies);
                 break;
             }
         }
@@ -418,7 +418,7 @@ class ModuleManager
      * 
      * @throws Zepi\Turbo\Exception Can not activate the module "$moduleNamespace". The module requires the module "$dependencyModuleNamespace" which isn't activated.
      */
-    protected function _handleRequiredDependencies($moduleNamespace, $dependencies, $activateDependencies)
+    protected function handleRequiredDependencies($moduleNamespace, $dependencies, $activateDependencies)
     {
         foreach ($dependencies as $dependencyModuleNamespace => $version) {
             $dependencyModuleNamespace = Framework::prepareNamespace($dependencyModuleNamespace);
@@ -443,12 +443,12 @@ class ModuleManager
      * @param string $namespace
      * @return string
      */
-    protected function _searchModulePath($namespace)
+    protected function searchModulePath($namespace)
     {
         $targetPath = false;
         
         // Iterate trough the module directories
-        foreach ($this->_moduleDirectories as $directory => $excludePattern) {
+        foreach ($this->moduleDirectories as $directory => $excludePattern) {
             $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
             $iterator = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
             $regexIterator = new \RegexIterator($iterator, '/^.+\/Module\.json$/i');
@@ -459,7 +459,7 @@ class ModuleManager
                     continue;
                 }
                 
-                $moduleNamespace = $this->_getNamespaceFromModuleJson($item->getPath());
+                $moduleNamespace = $this->getNamespaceFromModuleJson($item->getPath());
                 
                 if ($moduleNamespace === $namespace) {
                     $targetPath = $item->getPath();
@@ -476,8 +476,8 @@ class ModuleManager
      * 
      * @access protected
      */
-    protected function _saveActivatedModules()
+    protected function saveActivatedModules()
     {
-        $this->_moduleObjectBackend->saveObject($this->_activatedModules);
+        $this->moduleObjectBackend->saveObject($this->activatedModules);
     }
 }

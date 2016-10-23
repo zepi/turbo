@@ -6,13 +6,13 @@ class FileObjectBackendTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->_path = tempnam(sys_get_temp_dir(), 'tur');
-        $this->_fileObjectBackend = new \Zepi\Turbo\Backend\FileObjectBackend($this->_path);
+        $this->path = tempnam(sys_get_temp_dir(), 'tur');
+        $this->fileObjectBackend = new \Zepi\Turbo\Backend\FileObjectBackend($this->path);
     }
     
     public function tearDown()
     {
-        @unlink($this->_path);
+        @unlink($this->path);
     }
     
     public function testSaveObject()
@@ -21,9 +21,9 @@ class FileObjectBackendTest extends \PHPUnit_Framework_TestCase
         $object->test = true;
         $object->time = date('H:i:s');
                 
-        $this->_fileObjectBackend->saveObject($object);
+        $this->fileObjectBackend->saveObject($object);
     
-        $content = file_get_contents($this->_path);
+        $content = file_get_contents($this->path);
         
         $this->assertEquals($object, unserialize($content));
     }
@@ -37,9 +37,9 @@ class FileObjectBackendTest extends \PHPUnit_Framework_TestCase
         $object->test = true;
         $object->time = date('H:i:s');
 
-        chmod($this->_path, 0555);
+        chmod($this->path, 0555);
         
-        $this->_fileObjectBackend->saveObject($object);
+        $this->fileObjectBackend->saveObject($object);
     }
     
     public function testLoadObject()
@@ -48,16 +48,16 @@ class FileObjectBackendTest extends \PHPUnit_Framework_TestCase
         $object->test = true;
         $object->time = date('H:i:s');
 
-        file_put_contents($this->_path, serialize($object));
+        file_put_contents($this->path, serialize($object));
 
-        $loadedObject = $this->_fileObjectBackend->loadObject();
+        $loadedObject = $this->fileObjectBackend->loadObject();
     
         $this->assertEquals($object, $loadedObject);
     }
     
     public function testLoadObjectFromNotExistingFile()
     {
-        $loadedObject = $this->_fileObjectBackend->loadObject();
+        $loadedObject = $this->fileObjectBackend->loadObject();
     
         $this->assertFalse($loadedObject);
     }

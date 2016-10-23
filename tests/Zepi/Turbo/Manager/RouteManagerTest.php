@@ -6,179 +6,179 @@ class RouteManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->_framework = $this->getMockBuilder('\\Zepi\\Turbo\\Framework')
+        $this->framework = $this->getMockBuilder('\\Zepi\\Turbo\\Framework')
                                  ->disableOriginalConstructor()
                                  ->getMock();
-        $this->_fileObjectBackend = $this->getMockBuilder('\\Zepi\\Turbo\\Backend\\FileObjectBackend')
+        $this->fileObjectBackend = $this->getMockBuilder('\\Zepi\\Turbo\\Backend\\FileObjectBackend')
                                          ->setConstructorArgs(array(TESTS_ROOT_DIR . '/modules-working/'))
                                          ->getMock();
         
-        $this->_moduleManager = $this->getMockBuilder('\\Zepi\\Turbo\\Manager\\ModuleManager')
+        $this->moduleManager = $this->getMockBuilder('\\Zepi\\Turbo\\Manager\\ModuleManager')
                                  ->disableOriginalConstructor()
                                  ->getMock();
         
-        $this->_request = $this->getMockBuilder('\\Zepi\\Turbo\\Request\\CliRequest')
+        $this->request = $this->getMockBuilder('\\Zepi\\Turbo\\Request\\CliRequest')
                                ->setConstructorArgs(array('test route', array(), '/', 'en', 'linux'))
                                ->getMock();
 
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRouteDelimiter')
                        ->will($this->returnValue(' '));
         
-        $this->_fileObjectBackend->expects($this->once())
+        $this->fileObjectBackend->expects($this->once())
                                  ->method('loadObject');
         
-        $this->_routeManager = new \Zepi\Turbo\Manager\RouteManager($this->_framework, $this->_fileObjectBackend);
-        $this->_routeManager->initializeRoutingTable();
+        $this->routeManager = new \Zepi\Turbo\Manager\RouteManager($this->framework, $this->fileObjectBackend);
+        $this->routeManager->initializeRoutingTable();
     }
     
     public function testAddRoute()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->exactly(1))
+        $this->fileObjectBackend->expects($this->exactly(1))
                                  ->method('saveObject')
                                  ->with($this->anything());
         
-        $this->_routeManager->addRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->addRoute('test|route', '\\Test\\Handler');
     
-        $this->assertEquals('\\Test\\Handler', $this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testAddRouteTwoTimes()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->exactly(1))
+        $this->fileObjectBackend->expects($this->exactly(1))
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->addRoute('test|route', '\\Test\\Handler');
-        $this->_routeManager->addRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->addRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->addRoute('test|route', '\\Test\\Handler');
     
-        $this->assertEquals('\\Test\\Handler', $this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testAddAndRemoveRoute()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->exactly(2))
+        $this->fileObjectBackend->expects($this->exactly(2))
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->addRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->addRoute('test|route', '\\Test\\Handler');
     
-        $this->assertEquals('\\Test\\Handler', $this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
         
-        $this->_routeManager->removeRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
         
-        $this->assertFalse($this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testRemoveRouteTwoTimes()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->exactly(2))
+        $this->fileObjectBackend->expects($this->exactly(2))
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->addRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->addRoute('test|route', '\\Test\\Handler');
     
-        $this->assertEquals('\\Test\\Handler', $this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
     
-        $this->_routeManager->removeRoute('test|route', '\\Test\\Handler');
-        $this->_routeManager->removeRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
     
-        $this->assertFalse($this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testRemoveNotAddedRoute()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->never())
+        $this->fileObjectBackend->expects($this->never())
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->removeRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
     
-        $this->assertFalse($this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testClearCache()
     {
-        $this->_fileObjectBackend->expects($this->never())
+        $this->fileObjectBackend->expects($this->never())
                                  ->method('saveObject')
                                  ->with($this->anything());
         
-        $this->_moduleManager->expects($this->once())
+        $this->moduleManager->expects($this->once())
                              ->method('reactivateModules');
         
-        $this->_framework->expects($this->once())
+        $this->framework->expects($this->once())
                          ->method('getModuleManager')
-                         ->will($this->returnValue($this->_moduleManager));
+                         ->will($this->returnValue($this->moduleManager));
     
-        $this->_routeManager->clearCache();
+        $this->routeManager->clearCache();
     }
     
     public function testCompletlyDifferentRoute()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->exactly(1))
+        $this->fileObjectBackend->expects($this->exactly(1))
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->addRoute('abc|def|ghi', '\\Test\\Handler');
+        $this->routeManager->addRoute('abc|def|ghi', '\\Test\\Handler');
     
-        $this->assertFalse($this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testEqualNumberOfPartsButNotEqualRoute()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test route'));
         
-        $this->_fileObjectBackend->expects($this->exactly(1))
+        $this->fileObjectBackend->expects($this->exactly(1))
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->addRoute('abc|def', '\\Test\\Handler');
+        $this->routeManager->addRoute('abc|def', '\\Test\\Handler');
     
-        $this->assertFalse($this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }
     
     public function testRouteWithRouteParameters()
     {
-        $this->_request->expects($this->any())
+        $this->request->expects($this->any())
                        ->method('getRoute')
                        ->will($this->returnValue('test 1 asdf'));
         
-        $this->_request->expects($this->once())
+        $this->request->expects($this->once())
                        ->method('setRouteParams')
                        ->with(array(1, 'asdf'));
         
-        $this->_fileObjectBackend->expects($this->exactly(1))
+        $this->fileObjectBackend->expects($this->exactly(1))
                                  ->method('saveObject')
                                  ->with($this->anything());
     
-        $this->_routeManager->addRoute('test|[d]|[s]', '\\Test\\Handler');
+        $this->routeManager->addRoute('test|[d]|[s]', '\\Test\\Handler');
     
-        $this->assertEquals('\\Test\\Handler', $this->_routeManager->getEventNameForRoute($this->_request));
+        $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
     }
 }

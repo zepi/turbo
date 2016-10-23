@@ -50,25 +50,25 @@ class Response
      * @access protected
      * @var RequestAbstract
      */
-    protected $_request;
+    protected $request;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_data = array();
+    protected $data = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_outputParts = array();
+    protected $outputParts = array();
     
     /**
      * @access protected
      * @var string
      */
-    protected $_output;
+    protected $output;
     
     /**
      * Constructs the object
@@ -78,7 +78,7 @@ class Response
      */
     public function __construct(RequestAbstract $request)
     {
-        $this->_request = $request;
+        $this->request = $request;
     }
     
     /**
@@ -95,7 +95,7 @@ class Response
             return false;
         }
         
-        return $this->_data[$key];
+        return $this->data[$key];
     }
     
     /**
@@ -107,7 +107,7 @@ class Response
      */
     public function hasData($key)
     {
-        return (isset($this->_data[$key]));
+        return (isset($this->data[$key]));
     }
     
     /**
@@ -119,7 +119,7 @@ class Response
      */
     public function setData($key, $value)
     {
-        $this->_data[$key] = $value;
+        $this->data[$key] = $value;
     }
     
     /**
@@ -136,7 +136,7 @@ class Response
             return false;
         }
         
-        return $this->_outputParts[$key];
+        return $this->outputParts[$key];
     }
     
     /**
@@ -148,7 +148,7 @@ class Response
      */
     public function hasOutputPart($key)
     {
-        return (isset($this->_outputParts[$key]));
+        return (isset($this->outputParts[$key]));
     }
     
     /**
@@ -160,7 +160,7 @@ class Response
      */
     public function setOutputPart($key, $output)
     {
-        $this->_outputParts[$key] = $output;
+        $this->outputParts[$key] = $output;
     }
     
     /**
@@ -171,7 +171,7 @@ class Response
      */
     public function getOutputParts()
     {
-        return $this->_outputParts;
+        return $this->outputParts;
     }
     
     /**
@@ -182,7 +182,7 @@ class Response
      */
     public function getOutput()
     {
-        return $this->_output;
+        return $this->output;
     }
     
     /**
@@ -193,7 +193,7 @@ class Response
      */
     public function hasOutput()
     {
-        return ($this->_output != '');
+        return ($this->output != '');
     }
     
     /**
@@ -204,7 +204,7 @@ class Response
      */
     public function setOutput($output)
     {
-        $this->_output = $output;
+        $this->output = $output;
     }
     
     /**
@@ -218,11 +218,11 @@ class Response
     public function redirectTo($target, $headerCode = 301, $withOrigin = false)
     {
         if (strpos($target, 'http://') === false) {
-            $target = $this->_request->getFullRoute($target);
+            $target = $this->request->getFullRoute($target);
         }
         
         if ($withOrigin) {
-            $origin = $this->_request->getFullRoute();
+            $origin = $this->request->getFullRoute();
             $additionalQuery = '_origin=' . base64_encode($origin);
             
             $parts = parse_url($target);
@@ -327,7 +327,7 @@ class Response
             return false;
         }
         
-        $message = $this->_request->getProtocol() . ' ' . $code . ' ' . $codes[$code];
+        $message = $this->request->getProtocol() . ' ' . $code . ' ' . $codes[$code];
         header($message, true, $code);
         
         if ($resetOutput) {

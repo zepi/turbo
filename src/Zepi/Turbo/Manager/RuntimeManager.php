@@ -57,19 +57,19 @@ class RuntimeManager
      * @access protected
      * @var Framework
      */
-    protected $_framework;
+    protected $framework;
     
     /**
      * @access protected
      * @var ObjectBackendAbstract
      */
-    protected $_handlerObjectBackend;
+    protected $handlerObjectBackend;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_handlers = array();
+    protected $handlers = array();
     
     /**
      * Constructs the object
@@ -80,8 +80,8 @@ class RuntimeManager
      */
     public function __construct(Framework $framework, ObjectBackendAbstract $handlerObjectBackend)
     {
-        $this->_framework = $framework;
-        $this->_handlerObjectBackend = $handlerObjectBackend;
+        $this->framework = $framework;
+        $this->handlerObjectBackend = $handlerObjectBackend;
     }
     
     /**
@@ -92,12 +92,12 @@ class RuntimeManager
      */
     public function initializeManager()
     {
-        $handlers = $this->_handlerObjectBackend->loadObject();
+        $handlers = $this->handlerObjectBackend->loadObject();
         if (!is_array($handlers)) {
             $handlers = array();
         }
         
-        $this->_handlers = $handlers;
+        $this->handlers = $handlers;
     }
     
     /**
@@ -108,7 +108,7 @@ class RuntimeManager
      */
     public function executeEvent($eventName)
     {
-        $this->_executeItems(self::EVENT, $eventName);
+        $this->executeItems(self::EVENT, $eventName);
     }
     
     /**
@@ -120,7 +120,7 @@ class RuntimeManager
      */
     public function executeFilter($eventName, $value = null)
     {
-        return $this->_executeItems(self::FILTER, $eventName, $value);
+        return $this->executeItems(self::FILTER, $eventName, $value);
     }
     
     /**
@@ -133,25 +133,25 @@ class RuntimeManager
      * @param mixed $value
      * @return mixed
      */
-    protected function _executeItems($type, $name, $value = null)
+    protected function executeItems($type, $name, $value = null)
     {
-        if (!isset($this->_handlers[$type][$name])) {
+        if (!isset($this->handlers[$type][$name])) {
             return $value;
         }
         
-        $request = $this->_framework->getRequest();
+        $request = $this->framework->getRequest();
 
-        foreach ($this->_filterHandlers($type, $name, $request) as $handlerName) {
-            $handler = $this->_framework->getInstance($handlerName);
+        foreach ($this->filterHandlers($type, $name, $request) as $handlerName) {
+            $handler = $this->framework->getInstance($handlerName);
                 
-            $response = $this->_framework->getResponse();
+            $response = $this->framework->getResponse();
             $response->setData('_executedType', $type);
             $response->setData('_executedName', $name);
                 
             // Execute the handler
             $handlerResult = $handler->execute(
-                $this->_framework, 
-                $this->_framework->getRequest(), 
+                $this->framework, 
+                $this->framework->getRequest(), 
                 $response,
                 $value
             );
@@ -178,13 +178,13 @@ class RuntimeManager
      * @param RequestAbstract $request            
      * @return array
      */
-    protected function _filterHandlers($type, $name, RequestAbstract $request)
+    protected function filterHandlers($type, $name, RequestAbstract $request)
     {
         $filteredHandlers = array();
         
-        foreach ($this->_handlers[$type][$name] as $priority => $handlers) {
+        foreach ($this->handlers[$type][$name] as $priority => $handlers) {
             foreach ($handlers as $handlerName) {
-                if ($type === self::EVENT && !$this->_compareRequestWithInterface($request, $handlerName)) {
+                if ($type === self::EVENT && !$this->compareRequestWithInterface($request, $handlerName)) {
                     continue;
                 }
                 
@@ -205,7 +205,7 @@ class RuntimeManager
      * @param string $handlerName
      * @return boolean
      */
-    protected function _compareRequestWithInterface(RequestAbstract $request, $handlerName)
+    protected function compareRequestWithInterface(RequestAbstract $request, $handlerName)
     {
         $implementedInterfaces = class_implements($handlerName, true);
 
@@ -236,7 +236,7 @@ class RuntimeManager
      */
     public function addEventHandler($eventName, $eventHandlerName, $priority = 50)
     {
-        $this->_addHandler(self::EVENT, $eventName, $eventHandlerName, $priority);
+        $this->addHandler(self::EVENT, $eventName, $eventHandlerName, $priority);
     }
     
     /**
@@ -249,7 +249,7 @@ class RuntimeManager
      */
     public function addFilterHandler($filterName, $filterHandlerName, $priority = 50)
     {
-        $this->_addHandler(self::FILTER, $filterName, $filterHandlerName, $priority);
+        $this->addHandler(self::FILTER, $filterName, $filterHandlerName, $priority);
     }
     
     /**
@@ -261,23 +261,23 @@ class RuntimeManager
      * @param string $handlerName
      * @param integer $priority
      */
-    protected function _addHandler($type, $name, $handlerName, $priority)
+    protected function addHandler($type, $name, $handlerName, $priority)
     {
         // If the priority isn't existing we add the priority as 
         // a new array.
-        if (!isset($this->_handlers[$type][$name][$priority])) {
-            $this->_handlers[$type][$name][$priority] = array();
-            ksort($this->_handlers[$type][$name]);
+        if (!isset($this->handlers[$type][$name][$priority])) {
+            $this->handlers[$type][$name][$priority] = array();
+            ksort($this->handlers[$type][$name]);
         }
         
         // If we had the event handler already registred, return at this point
-        if (in_array($handlerName, $this->_handlers[$type][$name][$priority])) {
+        if (in_array($handlerName, $this->handlers[$type][$name][$priority])) {
             return;
         }
         
         // Add the event handler and save the new events array
-        $this->_handlers[$type][$name][$priority][] = $handlerName;
-        $this->_saveHandlers();
+        $this->handlers[$type][$name][$priority][] = $handlerName;
+        $this->saveHandlers();
     }
     
     /**
@@ -290,7 +290,7 @@ class RuntimeManager
      */
     public function removeEventHandler($eventName, $eventHandlerName, $priority = 50)
     {
-        $this->_removeHandler(self::EVENT, $eventName, $eventHandlerName, $priority);
+        $this->removeHandler(self::EVENT, $eventName, $eventHandlerName, $priority);
     }
     
     /**
@@ -303,7 +303,7 @@ class RuntimeManager
      */
     public function removeFilterHandler($filterName, $filterHandlerName, $priority = 50)
     {
-        $this->_removeHandler(self::FILTER, $filterName, $filterHandlerName, $priority);
+        $this->removeHandler(self::FILTER, $filterName, $filterHandlerName, $priority);
     }
     
     /**
@@ -315,22 +315,22 @@ class RuntimeManager
      * @param string $handlerName
      * @param string $priority
      */
-    protected function _removeHandler($type, $name, $handlerName, $priority)
+    protected function removeHandler($type, $name, $handlerName, $priority)
     {
         // If the event isn't set we add an array to the events array
-        if (!isset($this->_handlers[$type][$name][$priority])) {
+        if (!isset($this->handlers[$type][$name][$priority])) {
             return;
         }
         
         // If the event handler isn't registred we return with true.
-        if (!in_array($handlerName, $this->_handlers[$type][$name][$priority])) {
+        if (!in_array($handlerName, $this->handlers[$type][$name][$priority])) {
             return;
         }
         
         // Remove the event handler from the array
-        $index = array_search($handlerName, $this->_handlers[$type][$name][$priority]);
-        unset($this->_handlers[$type][$name][$priority][$index]);
-        $this->_saveHandlers();
+        $index = array_search($handlerName, $this->handlers[$type][$name][$priority]);
+        unset($this->handlers[$type][$name][$priority][$index]);
+        $this->saveHandlers();
     }
     
     /**
@@ -342,10 +342,10 @@ class RuntimeManager
      */
     public function clearCache($reactivateModules = true)
     {
-        $this->_handlers = array();
+        $this->handlers = array();
         
         if ($reactivateModules) {
-            $this->_framework->getModuleManager()->reactivateModules();
+            $this->framework->getModuleManager()->reactivateModules();
         }
     }
     
@@ -354,8 +354,8 @@ class RuntimeManager
      * 
      * @access protected
      */
-    protected function _saveHandlers()
+    protected function saveHandlers()
     {
-        $this->_handlerObjectBackend->saveObject($this->_handlers);
+        $this->handlerObjectBackend->saveObject($this->handlers);
     }
 }

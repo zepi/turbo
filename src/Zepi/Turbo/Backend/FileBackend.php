@@ -48,7 +48,7 @@ class FileBackend
      * @access protected
      * @var string
      */
-    protected $_path;
+    protected $path;
     
     /**
      * Constructs the object
@@ -58,7 +58,7 @@ class FileBackend
      */
     public function __construct($path)
     {
-        $this->_path = $path;
+        $this->path = $path;
     }
     
     /**
@@ -73,10 +73,10 @@ class FileBackend
      */
     public function saveToFile($content, $additionalPath = '')
     {
-        $path = $this->_realPath($additionalPath);
+        $path = $this->realPath($additionalPath);
         
         // If the path does not exists create the directory
-        $this->_createTargetDirectory($path);
+        $this->createTargetDirectory($path);
         
         // If the file exists but isn't writeable we need to throw an exception
         if (file_exists($path) && !is_writable($path)) {
@@ -95,7 +95,7 @@ class FileBackend
      */
     public function loadFromFile($additionalPath = '')
     {
-        $path = $this->_testPath($this->_realPath($additionalPath));
+        $path = $this->testPath($this->realPath($additionalPath));
         
         if ($path === false) {
             return '';
@@ -113,7 +113,7 @@ class FileBackend
      */
     public function deleteFile($additionalPath = '')
     {
-        $path = $this->_testPath($this->_realPath($additionalPath));
+        $path = $this->testPath($this->realPath($additionalPath));
         
         if ($path === false) {
             return false;
@@ -132,7 +132,7 @@ class FileBackend
      */
     public function isWritable($additionalPath = '')
     {
-        $path = $this->_realPath($additionalPath);
+        $path = $this->realPath($additionalPath);
         
         if ($path === false || !is_writable($path)) {
             return false;
@@ -149,14 +149,14 @@ class FileBackend
      * @param string $additionalPath
      * @return string
      */
-    protected function _realPath($additionalPath)
+    protected function realPath($additionalPath)
     {
         if (substr($additionalPath, 0, 1) === '/') {
             $path = $additionalPath;
         } else if ($additionalPath !== '') {
-            $path = $this->_path . $additionalPath;
+            $path = $this->path . $additionalPath;
         } else {
-            $path = $this->_path;
+            $path = $this->path;
         }
     
         return $path;
@@ -172,7 +172,7 @@ class FileBackend
      * 
      * @throws \Zepi\Turbo\Exception The file path "{path}" is not readable and not writeable!
      */
-    protected function _testPath($path)
+    protected function testPath($path)
     {
         if (!file_exists($path)) {
             return false;
@@ -193,11 +193,11 @@ class FileBackend
      *
      * @throws \Zepi\Turbo\Exception The directory "{directory}" doesn't exists
      */
-    protected function _createTargetDirectory($path)
+    protected function createTargetDirectory($path)
     {
         $directory = dirname($path);
         if (!file_exists($directory)) {
-            if (!is_writeable($this->_getExistingPath($directory))) {
+            if (!is_writeable($this->getExistingPath($directory))) {
                 throw new Exception('The directory "' . $directory . '" isn\'t writeable!');
             }
             
@@ -212,7 +212,7 @@ class FileBackend
      * @param string $path
      * @return string
      */
-    protected function _getExistingPath($path)
+    protected function getExistingPath($path)
     {
         $numberOfSlashes = substr_count($path, '/');
         $existingPath = $path;

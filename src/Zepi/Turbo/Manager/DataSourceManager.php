@@ -52,25 +52,25 @@ class DataSourceManager
      * @access protected
      * @var Framework
      */
-    protected $_framework;
+    protected $framework;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\Backend\ObjectBackendAbstract
      */
-    protected $_dataSourceObjectBackend;
+    protected $dataSourceObjectBackend;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_dataSources = array();
+    protected $dataSources = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_definitions = array();
+    protected $definitions = array();
     
     /**
      * Constructs the object
@@ -83,8 +83,8 @@ class DataSourceManager
         Framework $framework, 
         ObjectBackendAbstract $dataSourceObjectBackend
     ) {
-        $this->_framework = $framework;
-        $this->_dataSourceObjectBackend = $dataSourceObjectBackend;
+        $this->framework = $framework;
+        $this->dataSourceObjectBackend = $dataSourceObjectBackend;
     }
     
     /**
@@ -95,12 +95,12 @@ class DataSourceManager
      */
     public function initializeDataSourceManager()
     {
-        $dataSources = $this->_dataSourceObjectBackend->loadObject();
+        $dataSources = $this->dataSourceObjectBackend->loadObject();
         if (!is_array($dataSources)) {
             $dataSources = array();
         }
     
-        $this->_dataSources = $dataSources;
+        $this->dataSources = $dataSources;
     }
     
     /**
@@ -112,14 +112,14 @@ class DataSourceManager
      */
     public function addDataSource($driver, $className)
     {
-        $typeClass = $this->_getTypeClass($className);
+        $typeClass = $this->getTypeClass($className);
 
-        if (!isset($this->_dataSources[$typeClass]) || !is_array($this->_dataSources[$typeClass])) {
-            $this->_dataSources[$typeClass] = array();
+        if (!isset($this->dataSources[$typeClass]) || !is_array($this->dataSources[$typeClass])) {
+            $this->dataSources[$typeClass] = array();
         }
         
-        $this->_dataSources[$typeClass][$driver] = $className;
-        $this->_saveDataSources();
+        $this->dataSources[$typeClass][$driver] = $className;
+        $this->saveDataSources();
         
         return true;
     }
@@ -134,14 +134,14 @@ class DataSourceManager
      */
     public function removeDataSource($driver, $className)
     {
-        $typeClass = $this->_getTypeClass($className);
+        $typeClass = $this->getTypeClass($className);
         
-        if (!isset($this->_dataSources[$typeClass][$driver])) {
+        if (!isset($this->dataSources[$typeClass][$driver])) {
             return false;
         }
         
-        unset($this->_dataSources[$typeClass][$driver]);
-        $this->_saveDataSources();
+        unset($this->dataSources[$typeClass][$driver]);
+        $this->saveDataSources();
         
         return true;
     }
@@ -155,7 +155,7 @@ class DataSourceManager
      * 
      * @throws \Zepi\Turbo\Exception Data Source "{className}" does not implement the DataSourceInterface.
      */
-    protected function _getTypeClass($className)
+    protected function getTypeClass($className)
     {
         $implementedClasses = class_implements($className);
         $frameworkDataSourceInterface = 'Zepi\\Turbo\\FrameworkInterface\\DataSourceInterface';
@@ -177,9 +177,9 @@ class DataSourceManager
      *
      * @access protected
      */
-    protected function _saveDataSources()
+    protected function saveDataSources()
     {
-        $this->_dataSourceObjectBackend->saveObject($this->_dataSources);
+        $this->dataSourceObjectBackend->saveObject($this->dataSources);
     }
     
     /**
@@ -191,7 +191,7 @@ class DataSourceManager
      */
     public function addDefinition($selector, $driver)
     {
-        $this->_definitions[$selector] = $driver;
+        $this->definitions[$selector] = $driver;
     }
     
     /**
@@ -203,11 +203,11 @@ class DataSourceManager
      */
     public function removeDefinition($selector)
     {
-        if (!isset($this->_definitions[$selector])) {
+        if (!isset($this->definitions[$selector])) {
             return false;
         }
         
-        unset($this->_definitions[$selector]);
+        unset($this->definitions[$selector]);
         return true;
     }
     
@@ -223,21 +223,21 @@ class DataSourceManager
      */
     public function getDataSource($typeClass)
     {
-        $driver = $this->_getDriver($typeClass);
+        $driver = $this->getDriver($typeClass);
         
         // If there is no driver for the given type class throw an exception
         if ($driver === false) {
             throw new Exception('Cannot find a driver for the given type class "' . $typeClass . '".');
         }
         
-        $dataSourceClass = $this->_searchDataSourceClass($typeClass, $driver);
+        $dataSourceClass = $this->searchDataSourceClass($typeClass, $driver);
 
         // If there is no data source class for the given type class throw an exception
         if ($dataSourceClass === false) {
             throw new Exception('Cannot find a data source for the given type class "' . $typeClass . '" (selected driver: "' . $driver . '").');
         }
         
-        return $this->_framework->getInstance($dataSourceClass);
+        return $this->framework->getInstance($dataSourceClass);
     }
     
     /**
@@ -248,7 +248,7 @@ class DataSourceManager
      */
     public function getDataSourceTypeClasses()
     {
-        return array_keys($this->_dataSources);
+        return array_keys($this->dataSources);
     }
     
     /**
@@ -259,21 +259,21 @@ class DataSourceManager
      * @param string $typeClass
      * @return false|string
      */
-    protected function _getDriver($typeClass)
+    protected function getDriver($typeClass)
     {
         $bestDriver = false;
         $numberOfParts = 0;
         
-        foreach ($this->_definitions as $selector => $driver) {
+        foreach ($this->definitions as $selector => $driver) {
             if ($selector === '*' || $selector === $typeClass) {
                 $bestDriver = $driver;
-                $numberOfParts = $this->_countNumberOfParts($selector);
+                $numberOfParts = $this->countNumberOfParts($selector);
             } else if (substr($selector, -1) === '*') {
                 $selectorWithoutWildcard = substr($selector, 0, -1);
                 
-                if (strpos($selector, $selectorWithoutWildcard) === 0 || $numberOfParts < $this->_countNumberOfParts($selector)) {
+                if (strpos($selector, $selectorWithoutWildcard) === 0 || $numberOfParts < $this->countNumberOfParts($selector)) {
                     $bestDriver = $driver;
-                    $numberOfParts = $this->_countNumberOfParts($selector);
+                    $numberOfParts = $this->countNumberOfParts($selector);
                 }
             }
         }
@@ -288,7 +288,7 @@ class DataSourceManager
      * @param string $selector
      * @return integer
      */
-    protected function _countNumberOfParts($selector)
+    protected function countNumberOfParts($selector)
     {
         $selector = trim($selector, '*\\');
         
@@ -305,10 +305,10 @@ class DataSourceManager
      * @param string $driver
      * @return false|string
      */
-    protected function _searchDataSourceClass($typeClass, $driver)
+    protected function searchDataSourceClass($typeClass, $driver)
     {
-        if (isset($this->_dataSources[$typeClass][$driver])) {
-            return $this->_dataSources[$typeClass][$driver];
+        if (isset($this->dataSources[$typeClass][$driver])) {
+            return $this->dataSources[$typeClass][$driver];
         }
         
         return false;

@@ -53,7 +53,7 @@ abstract class ObjectBackendAbstract
      */
     public function saveObject($object)
     {
-        return $this->_saveSerializedObject(serialize($object));
+        return $this->saveSerializedObject(serialize($object));
     }
     
     /**
@@ -63,7 +63,7 @@ abstract class ObjectBackendAbstract
      * @param string $serializedObject
      * @return integer
      */
-    abstract protected function _saveSerializedObject($serializedObject);
+    abstract protected function saveSerializedObject($serializedObject);
     
     /**
      * Loads an object
@@ -73,7 +73,7 @@ abstract class ObjectBackendAbstract
      */
     public function loadObject()
     {
-        $serializedObject = $this->_loadSerializedObject();
+        $serializedObject = $this->loadSerializedObject();
         $object = unserialize($serializedObject);
         
         if ($object === false) {
@@ -89,5 +89,5 @@ abstract class ObjectBackendAbstract
      * @access protected
      * @return string
      */
-    abstract protected function _loadSerializedObject();
+    abstract protected function loadSerializedObject();
 }

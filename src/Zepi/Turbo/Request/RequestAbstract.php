@@ -50,43 +50,43 @@ abstract class RequestAbstract
      * @access protected
      * @var string
      */
-    protected $_route;
+    protected $route;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_params = array();
+    protected $params = array();
     
     /**
      * @access protected
      * @var array
      */
-    protected $_routeParams = array();
+    protected $routeParams = array();
     
     /**
      * @access protected
      * @var string
      */
-    protected $_base;
+    protected $base;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_locale;
+    protected $locale;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_operatingSystem;
+    protected $operatingSystem;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_data = array();
+    protected $data = array();
     
     /**
      * Constructs the object
@@ -101,21 +101,21 @@ abstract class RequestAbstract
      */
     public function __construct($route, $params, $base, $locale, $operatingSystem, $data = array())
     {
-        $this->_route = $route;
-        $this->_locale = $locale;
-        $this->_operatingSystem = $operatingSystem;
+        $this->route = $route;
+        $this->locale = $locale;
+        $this->operatingSystem = $operatingSystem;
         
         if (is_array($params)) {
-            $this->_params = $params; 
+            $this->params = $params; 
         }
         
         if (substr($base, -1) === '/') {
             $base = substr($base, 0, -1);
         }
-        $this->_base = $base;
+        $this->base = $base;
         
         if (is_array($data)) {
-            $this->_data = $data;
+            $this->data = $data;
         }
     }
     
@@ -127,7 +127,7 @@ abstract class RequestAbstract
      */
     public function getRoute()
     {
-        return $this->_route;
+        return $this->route;
     }
     
     /**
@@ -138,7 +138,7 @@ abstract class RequestAbstract
      */
     public function setRoute($route)
     {
-        $this->_route = $route;
+        $this->route = $route;
     }
     
     /**
@@ -150,7 +150,7 @@ abstract class RequestAbstract
      */
     public function hasParam($key)
     {
-        return (isset($this->_params[$key]));
+        return (isset($this->params[$key]));
     }
     
     /**
@@ -167,7 +167,7 @@ abstract class RequestAbstract
             return false;
         }
         
-        return $this->_params[$key];
+        return $this->params[$key];
     }
     
     /**
@@ -178,7 +178,7 @@ abstract class RequestAbstract
      */
     public function getParams()
     {
-        return $this->_params;
+        return $this->params;
     }
     
     /**
@@ -189,7 +189,7 @@ abstract class RequestAbstract
      */
     public function addRouteParam($param)
     {
-        $this->_routeParams[] = $param;
+        $this->routeParams[] = $param;
     }
     
     /**
@@ -205,7 +205,7 @@ abstract class RequestAbstract
             return false;
         }
         
-        $this->_routeParams = $params;
+        $this->routeParams = $params;
         
         return true;
     }
@@ -219,11 +219,11 @@ abstract class RequestAbstract
      */
     public function getRouteParam($index)
     {
-        if (!isset($this->_routeParams[$index])) {
+        if (!isset($this->routeParams[$index])) {
             return false;
         }
         
-        return $this->_routeParams[$index];
+        return $this->routeParams[$index];
     }
     
     /**
@@ -245,7 +245,7 @@ abstract class RequestAbstract
     public function getFullRoute($routePart = '')
     {
         if ($routePart == '') {
-            $routePart = $this->_route;
+            $routePart = $this->route;
         }
         
         $delimiter = $this->getRouteDelimiter();
@@ -258,7 +258,7 @@ abstract class RequestAbstract
             $routePart .= '/';
         }
 
-        return $this->_base . $routePart;
+        return $this->base . $routePart;
     }
     
     /**
@@ -269,7 +269,7 @@ abstract class RequestAbstract
      */
     public function getLocale()
     {
-        return $this->_locale;
+        return $this->locale;
     }
     
     /**
@@ -280,6 +280,6 @@ abstract class RequestAbstract
      */
     public function getOperatingSystem()
     {
-        return $this->_operatingSystem;
+        return $this->operatingSystem;
     }
 }

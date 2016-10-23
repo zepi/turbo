@@ -48,7 +48,7 @@ class FileObjectBackend extends ObjectBackendAbstract
      * @access protected
      * @var string
      */
-    protected $_path;
+    protected $path;
     
     /**
      * Constructs the object
@@ -58,7 +58,7 @@ class FileObjectBackend extends ObjectBackendAbstract
      */
     public function __construct($path)
     {
-        $this->_path = $path;
+        $this->path = $path;
     }
     
     /**
@@ -70,13 +70,13 @@ class FileObjectBackend extends ObjectBackendAbstract
      * 
      * @throws Zepi\Turbo\Exception The file "$path" isn't writable!
      */
-    protected function _saveSerializedObject($serializedObject)
+    protected function saveSerializedObject($serializedObject)
     {
-        if (file_exists($this->_path) && !is_writable($this->_path)) {
-            throw new Exception('The file "' . $this->_path . '" isn\'t writable!');
+        if (file_exists($this->path) && !is_writable($this->path)) {
+            throw new Exception('The file "' . $this->path . '" isn\'t writable!');
         }
 
-        return file_put_contents($this->_path, $serializedObject);
+        return file_put_contents($this->path, $serializedObject);
     }
     
     /**
@@ -85,12 +85,12 @@ class FileObjectBackend extends ObjectBackendAbstract
      * @access protected
      * @return string
      */
-    protected function _loadSerializedObject()
+    protected function loadSerializedObject()
     {
-        if (!file_exists($this->_path)) {
+        if (!file_exists($this->path)) {
             return '';
         }
         
-        return file_get_contents($this->_path);
+        return file_get_contents($this->path);
     }
 }

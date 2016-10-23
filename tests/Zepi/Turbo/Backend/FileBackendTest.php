@@ -6,20 +6,20 @@ class FileBackendTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->_path = tempnam(sys_get_temp_dir(), 'tur');
-        $this->_fileBackend = new \Zepi\Turbo\Backend\FileBackend($this->_path);
+        $this->path = tempnam(sys_get_temp_dir(), 'tur');
+        $this->fileBackend = new \Zepi\Turbo\Backend\FileBackend($this->path);
     }
     
     public function tearDown()
     {
-        @unlink($this->_path);
+        @unlink($this->path);
     }
     
     public function testSaveToFile()
     {
-        $this->_fileBackend->saveToFile('test123');
+        $this->fileBackend->saveToFile('test123');
     
-        $content = file_get_contents($this->_path);
+        $content = file_get_contents($this->path);
         
         $this->assertEquals('test123', $content);
     }
@@ -29,57 +29,57 @@ class FileBackendTest extends \PHPUnit_Framework_TestCase
      */
     public function testSaveToFileOnExistingFileWhichIsntWriteable()
     {
-        chmod($this->_path, 0555);
+        chmod($this->path, 0555);
         
-        $this->_fileBackend->saveToFile('test123');
+        $this->fileBackend->saveToFile('test123');
     }
     
     public function testLoadFromFile()
     {
-        file_put_contents($this->_path, 'test123');
+        file_put_contents($this->path, 'test123');
 
-        $content = $this->_fileBackend->loadFromfile();
+        $content = $this->fileBackend->loadFromfile();
     
         $this->assertEquals('test123', $content);
     }
     
     public function testLoadFromFileOnANotExistingFile()
     {
-        @unlink($this->_path);
-        $content = $this->_fileBackend->loadFromFile();
+        @unlink($this->path);
+        $content = $this->fileBackend->loadFromFile();
     
         $this->assertEquals('', $content);
     }
     
     public function testDeleteFile()
     {
-        $this->assertTrue(file_exists($this->_path));
+        $this->assertTrue(file_exists($this->path));
         
-        $result = $this->_fileBackend->deleteFile();
+        $result = $this->fileBackend->deleteFile();
     
         $this->assertTrue($result);
-        $this->assertFalse(file_exists($this->_path));
+        $this->assertFalse(file_exists($this->path));
     }
     
     public function testDeleteNotExistingFile()
     {
-        @unlink($this->_path);
-        $result = $this->_fileBackend->deleteFile();
+        @unlink($this->path);
+        $result = $this->fileBackend->deleteFile();
     
         $this->assertFalse($result);
     }
     
     public function testIsWriteable()
     {
-        $result = $this->_fileBackend->isWritable();
+        $result = $this->fileBackend->isWritable();
     
         $this->assertTrue($result);
     }
     
     public function testIsNotExistingFileWriteable()
     {
-        @unlink($this->_path);
-        $result = $this->_fileBackend->isWritable();
+        @unlink($this->path);
+        $result = $this->fileBackend->isWritable();
     
         $this->assertFalse($result);
     }
@@ -89,23 +89,23 @@ class FileBackendTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadFromNotAccessibleFile()
     {
-        chmod($this->_path, 0000);
+        chmod($this->path, 0000);
     
-        $this->_fileBackend->loadFromfile();
+        $this->fileBackend->loadFromfile();
     }
     
     public function testAllFunctionsWithAdditionalPathRelative()
     {
-        $this->_path = sys_get_temp_dir() . '/' . uniqid('tur') . '/';
-        $this->_fileBackend = new \Zepi\Turbo\Backend\FileBackend($this->_path);
+        $this->path = sys_get_temp_dir() . '/' . uniqid('tur') . '/';
+        $this->fileBackend = new \Zepi\Turbo\Backend\FileBackend($this->path);
         
         $additionalPath = uniqid('all');
         $testContent = 'test123';
         
-        $resultSave = $this->_fileBackend->saveToFile($testContent, $additionalPath);
-        $resultLoad = $this->_fileBackend->loadFromFile($additionalPath);
-        $isWriteable = $this->_fileBackend->isWritable($additionalPath);
-        $resultDelete = $this->_fileBackend->deleteFile($additionalPath);
+        $resultSave = $this->fileBackend->saveToFile($testContent, $additionalPath);
+        $resultLoad = $this->fileBackend->loadFromFile($additionalPath);
+        $isWriteable = $this->fileBackend->isWritable($additionalPath);
+        $resultDelete = $this->fileBackend->deleteFile($additionalPath);
 
         $this->assertEquals(strlen($testContent), $resultSave);
         $this->assertEquals($testContent, $resultLoad);
@@ -115,16 +115,16 @@ class FileBackendTest extends \PHPUnit_Framework_TestCase
     
     public function testAllFunctionsWithAdditionalPathAbsolute()
     {
-        $this->_path = sys_get_temp_dir() . '/' . uniqid('tur') . '/';
-        $this->_fileBackend = new \Zepi\Turbo\Backend\FileBackend($this->_path);
+        $this->path = sys_get_temp_dir() . '/' . uniqid('tur') . '/';
+        $this->fileBackend = new \Zepi\Turbo\Backend\FileBackend($this->path);
     
         $additionalPath = sys_get_temp_dir() . '/' . uniqid('turall');
         $testContent = 'test123';
     
-        $resultSave = $this->_fileBackend->saveToFile($testContent, $additionalPath);
-        $resultLoad = $this->_fileBackend->loadFromFile($additionalPath);
-        $isWriteable = $this->_fileBackend->isWritable($additionalPath);
-        $resultDelete = $this->_fileBackend->deleteFile($additionalPath);
+        $resultSave = $this->fileBackend->saveToFile($testContent, $additionalPath);
+        $resultLoad = $this->fileBackend->loadFromFile($additionalPath);
+        $isWriteable = $this->fileBackend->isWritable($additionalPath);
+        $resultDelete = $this->fileBackend->deleteFile($additionalPath);
     
         $this->assertEquals(strlen($testContent), $resultSave);
         $this->assertEquals($testContent, $resultLoad);
@@ -141,6 +141,6 @@ class FileBackendTest extends \PHPUnit_Framework_TestCase
         mkdir($additionalPath, 0000);
         $additionalPath .= '/' . uniqid('exc') . '/' . uniqid();
     
-        $this->_fileBackend->saveToFile('test123', $additionalPath);
+        $this->fileBackend->saveToFile('test123', $additionalPath);
     }
 }

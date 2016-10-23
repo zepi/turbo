@@ -53,37 +53,37 @@ class WebRequest extends RequestAbstract
      * @access protected
      * @var string
      */
-    protected $_method;
+    protected $method;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_requestedUrl;
+    protected $requestedUrl;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_headers;
+    protected $headers;
     
     /**
      * @access protected
      * @var string
      */
-    protected $_protocol;
+    protected $protocol;
     
     /**
      * @access protected
      * @var boolean
      */
-    protected $_isSsl = false;
+    protected $isSsl = false;
     
     /**
      * @access protected
      * @var \Zepi\Turbo\FrameworkInterface\SessionInterface
      */
-    protected $_session = null;
+    protected $session = null;
     
     /**
      * Constructs the object
@@ -105,11 +105,11 @@ class WebRequest extends RequestAbstract
     {
         parent::__construct($route, $params, $base, $locale, $operatingSystem, $data);
         
-        $this->_method = $method;
-        $this->_requestedUrl = $requestedUrl;
-        $this->_isSsl = $isSsl;
-        $this->_headers = $headers;
-        $this->_protocol = $protocol;
+        $this->method = $method;
+        $this->requestedUrl = $requestedUrl;
+        $this->isSsl = $isSsl;
+        $this->headers = $headers;
+        $this->protocol = $protocol;
     }
     
     /**
@@ -120,7 +120,7 @@ class WebRequest extends RequestAbstract
      */
     public function getMethod()
     {
-        return $this->_method;
+        return $this->method;
     }
     
     /**
@@ -131,7 +131,7 @@ class WebRequest extends RequestAbstract
      */
     public function getRequestedUrl()
     {
-        return $this->_requestedUrl;
+        return $this->requestedUrl;
     }
     
     /**
@@ -229,7 +229,7 @@ class WebRequest extends RequestAbstract
      */
     public function isSsl()
     {
-        return ($this->_isSsl);
+        return ($this->isSsl);
     }
     
     /**
@@ -241,11 +241,11 @@ class WebRequest extends RequestAbstract
      */
     public function setSession(SessionInterface $session)
     {
-        if (!is_object($session) || $this->_session !== null) {
+        if (!is_object($session) || $this->session !== null) {
             return false;
         }
         
-        $this->_session = $session;
+        $this->session = $session;
         
         return true;
     }
@@ -259,7 +259,7 @@ class WebRequest extends RequestAbstract
      */
     public function hasSession()
     {
-        if ($this->_session === null) {
+        if ($this->session === null) {
             return false;
         }
         
@@ -274,11 +274,11 @@ class WebRequest extends RequestAbstract
      */
     public function getSession()
     {
-        if ($this->_session === null) {
+        if ($this->session === null) {
             return false;
         }
         
-        return $this->_session;
+        return $this->session;
     }
     
     /**
@@ -288,7 +288,7 @@ class WebRequest extends RequestAbstract
      */
     public function removeSession()
     {
-        $this->_session = null;
+        $this->session = null;
         $this->clearSessionData();
     }
     
@@ -301,11 +301,11 @@ class WebRequest extends RequestAbstract
      */
     public function getHeader($key)
     {
-        if (!isset($this->_headers[$key])) {
+        if (!isset($this->headers[$key])) {
             return false;
         }
         
-        return $this->_headers[$key];
+        return $this->headers[$key];
     }
     
     /**
@@ -316,7 +316,7 @@ class WebRequest extends RequestAbstract
      */
     public function getHeaders()
     {
-        return $this->_headers;
+        return $this->headers;
     }
     
     /**
@@ -327,6 +327,6 @@ class WebRequest extends RequestAbstract
      */
     public function getProtocol()
     {
-        return $this->_protocol;
+        return $this->protocol;
     }
 }

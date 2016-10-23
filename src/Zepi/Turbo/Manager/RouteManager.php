@@ -52,19 +52,19 @@ class RouteManager
      * @access protected
      * @var Framework
      */
-    protected $_framework;
+    protected $framework;
     
     /**
      * @access protected
      * @var ObjectBackendAbstract
      */
-    protected $_routeObjectBackend;
+    protected $routeObjectBackend;
     
     /**
      * @access protected
      * @var array
      */
-    protected $_routes = array();
+    protected $routes = array();
     
     /**
      * Constructs the object
@@ -75,8 +75,8 @@ class RouteManager
      */
     public function __construct(Framework $framework, ObjectBackendAbstract $routeObjectBackend)
     {
-        $this->_framework = $framework;
-        $this->_routeObjectBackend = $routeObjectBackend;
+        $this->framework = $framework;
+        $this->routeObjectBackend = $routeObjectBackend;
     }
     
     /**
@@ -87,12 +87,12 @@ class RouteManager
      */
     public function initializeRoutingTable()
     {
-        $routes = $this->_routeObjectBackend->loadObject();
+        $routes = $this->routeObjectBackend->loadObject();
         if (!is_array($routes)) {
             $routes = array();
         }
         
-        $this->_routes = $routes;
+        $this->routes = $routes;
     }
     
     /**
@@ -108,19 +108,19 @@ class RouteManager
     {
         // If the priority isn't existing we add the priority as 
         // a new array.
-        if (!isset($this->_routes[$priority])) {
-            $this->_routes[$priority] = array();
-            ksort($this->_routes);
+        if (!isset($this->routes[$priority])) {
+            $this->routes[$priority] = array();
+            ksort($this->routes);
         }
         
         // If we had the route already registred, return at this point
-        if (isset($this->_routes[$priority][$route])) {
+        if (isset($this->routes[$priority][$route])) {
             return true;
         }
         
         // Add the route and save the new routes array
-        $this->_routes[$priority][$route] = $eventName;
-        $this->_saveRoutes();
+        $this->routes[$priority][$route] = $eventName;
+        $this->saveRoutes();
         
         return true;
     }
@@ -137,18 +137,18 @@ class RouteManager
     public function removeRoute($route, $eventName, $priority = 50)
     {
         // If the priority isn't existing we return at this point
-        if (!isset($this->_routes[$priority])) {
+        if (!isset($this->routes[$priority])) {
             return true;
         }
         
         // If the route isn't registred we return with true.
-        if (!isset($this->_routes[$priority][$route])) {
+        if (!isset($this->routes[$priority][$route])) {
             return true;
         }
         
         // Remove the route from the array
-        unset($this->_routes[$priority][$route]);
-        $this->_saveRoutes();
+        unset($this->routes[$priority][$route]);
+        $this->saveRoutes();
         
         return true;
     }
@@ -162,10 +162,10 @@ class RouteManager
      */
     public function clearCache($reactivateModules = true)
     {
-        $this->_routes = array();
+        $this->routes = array();
         
         if ($reactivateModules) {
-            $this->_framework->getModuleManager()->reactivateModules();
+            $this->framework->getModuleManager()->reactivateModules();
         }
     }
     
@@ -174,9 +174,9 @@ class RouteManager
      * 
      * @access protected
      */
-    protected function _saveRoutes()
+    protected function saveRoutes()
     {
-        $this->_routeObjectBackend->saveObject($this->_routes);
+        $this->routeObjectBackend->saveObject($this->routes);
     }
     
     /**
@@ -190,10 +190,10 @@ class RouteManager
     public function getEventNameForRoute(RequestAbstract $request)
     {
         // Loop trough the priorities
-        foreach ($this->_routes as $priority => $routes) {
+        foreach ($this->routes as $priority => $routes) {
             // Loop trough the routes for each priority
             foreach ($routes as $route => $eventName) {
-                $result = $this->_compareRoute($route, $request);
+                $result = $this->compareRoute($route, $request);
                 
                 if ($result) {
                     // The routes are equal - we have an event name
@@ -213,7 +213,7 @@ class RouteManager
      * @param \Zepi\Turbo\Request\RequestAbstract $request
      * @return boolean
      */
-    protected function _compareRoute($route, RequestAbstract $request)
+    protected function compareRoute($route, RequestAbstract $request)
     {
         // Replace the normal route delimiter with the request route delimiter
         $route = str_replace('|', $request->getRouteDelimiter(), $route);
@@ -239,7 +239,7 @@ class RouteManager
             $targetPart = $targetRouteParts[$pos];
 
             if (in_array($part, $dataTypes) && $targetPart != '') {
-                $routeParams[] = $this->_parseRouteParam($part, $targetPart);
+                $routeParams[] = $this->parseRouteParam($part, $targetPart);
             } else if ($part !== $targetPart) {
                 // The part isn't equal == the route can't be equal
                 return false;
@@ -260,7 +260,7 @@ class RouteManager
      * @param string $targetPart
      * @return mixed
      */
-    protected function _parseRouteParam($part, $targetPart)
+    protected function parseRouteParam($part, $targetPart)
     {
         // If the part is a data type we need this route parameter
         if ($part === '[d]' && is_numeric($targetPart)) {
