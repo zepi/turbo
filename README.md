@@ -2,8 +2,8 @@
 Turbo - Speeds up your development process.
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zepi/turbo/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/zepi/turbo/?branch=master)
-[![Build Status](https://travis-ci.org/zepi/turbo.svg?branch=master)](https://travis-ci.org/zepi/turbo)
-[![codecov.io](https://codecov.io/github/zepi/turbo/coverage.svg?branch=master)](https://codecov.io/github/zepi/turbo?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/zepi/turbo/badges/build.png?b=master)](https://scrutinizer-ci.com/g/zepi/turbo/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/zepi/turbo/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/zepi/turbo/?branch=master)
 
 # Installation
 1. Create the project `composer create-project zepi/turbo-boilerplate /your/project/directory`
