@@ -227,7 +227,7 @@ class Response
         }
         
         if ($withOrigin) {
-            $target = $this->buildUrlWitOrigin($target);
+            $target = $this->addOriginToTargetUrl($target);
         }
         
         header("Location: " . $target, true, $headerCode);
@@ -356,7 +356,7 @@ class Response
      * @param string $target
      * @return void|string
      */
-    protected function buildUrlWithOrigin($target)
+    protected function addOriginToTargetUrl($target)
     {
         $origin = $this->request->getFullRoute();
         $additionalQuery = '_origin=' . base64_encode($origin);
