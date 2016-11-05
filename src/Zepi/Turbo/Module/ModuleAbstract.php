@@ -113,9 +113,11 @@ abstract class ModuleAbstract
      * This action will be executed on the deactiviation of the module
      * 
      * @access public
-     * @abstract
      */
-    abstract public function deactivate();
+    public function deactivate()
+    {
+        
+    }
     
     /**
      * Returns the namespace of the module

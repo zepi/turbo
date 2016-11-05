@@ -101,20 +101,7 @@ class RequestManager
             }
             
             if (strpos($arg, '-') === 0) {
-                $arg = ltrim($arg, '-');
-                
-                $key = $arg;
-                $value = true;
-                
-                if (strpos($arg, '=') !== false) {
-                    $key = substr($arg, 0, strpos($arg, '='));
-                    $value = substr($arg, strpos($arg, '=') + 1);
-                    
-                    if (is_numeric($value)) {
-                        // Transform the value into the correct data type
-                        $value = $value * 1;
-                    }
-                }
+                list($key, $value) = $this->parseArgument($arg);
                 
                 $params[$key] = $value;
             } else {
@@ -131,6 +118,33 @@ class RequestManager
         $operatingSystem = $this->getOperatingSystem();
         
         return new CliRequest($route, $params, $base, 'en_US', $operatingSystem);
+    }
+    
+    /**
+     * Parses an argument and returns an array with key
+     * and value.
+     * 
+     * @param string $arg
+     * @return array
+     */
+    protected function parseArgument($arg)
+    {
+        $arg = ltrim($arg, '-');
+        
+        $key = $arg;
+        $value = true;
+        
+        if (strpos($arg, '=') !== false) {
+            $key = substr($arg, 0, strpos($arg, '='));
+            $value = substr($arg, strpos($arg, '=') + 1);
+        
+            if (is_numeric($value)) {
+                // Transform the value into the correct data type
+                $value = $value * 1;
+            }
+        }
+        
+        return array($key, $value);
     }
 
     /**

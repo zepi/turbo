@@ -227,23 +227,7 @@ class Response
         }
         
         if ($withOrigin) {
-            $origin = $this->request->getFullRoute();
-            $additionalQuery = '_origin=' . base64_encode($origin);
-            
-            $parts = parse_url($target);
-            
-            if ($parts === false) {
-                return;
-            }
-            
-            if (!isset($parts['query'])) {
-                $parts['query'] = '';
-            } else if ($parts['query'] !== '') {
-                $parts['query'] .= '&';
-            }
-            
-            $parts['query'] .= $additionalQuery;
-            $target = $this->buildUrl($parts);
+            $target = $this->buildUrlWitOrigin($target);
         }
         
         header("Location: " . $target, true, $headerCode);
@@ -363,5 +347,33 @@ class Response
     public function buildUrl($urlParts)
     {
         return http_build_url($urlParts);
+    }
+    
+    /**
+     * Adds the origin and returns the given target url
+     * with the origin query parameter.
+     * 
+     * @param string $target
+     * @return void|string
+     */
+    protected function buildUrlWithOrigin($target)
+    {
+        $origin = $this->request->getFullRoute();
+        $additionalQuery = '_origin=' . base64_encode($origin);
+        
+        $parts = parse_url($target);
+        
+        if ($parts === false) {
+            return $target;
+        }
+        
+        if (!isset($parts['query'])) {
+            $parts['query'] = '';
+        } else if ($parts['query'] !== '') {
+            $parts['query'] .= '&';
+        }
+        
+        $parts['query'] .= $additionalQuery;
+        return $this->buildUrl($parts);
     }
 }
