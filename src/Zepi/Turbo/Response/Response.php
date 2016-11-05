@@ -362,47 +362,6 @@ class Response
      */
     public function buildUrl($urlParts)
     {
-        $url = '';
-        $auth = false;
-        
-        if (isset($urlParts['scheme'])) {
-            $url .= $urlParts['scheme'] . '://';
-        }
-        
-        if (isset($urlParts['user'])) {
-            $url .= $urlParts['user'];
-            $auth = true;
-        }
-        
-        if (isset($urlParts['pass'])) {
-            $url .= ':' . $urlParts['pass'];
-            $auth = true;
-        }
-        
-        if ($auth) {
-            $url .= '@';
-        }
-        
-        if (isset($urlParts['host'])) {
-            $url .= $urlParts['host'];
-        }
-        
-        if (isset($urlParts['port'])) {
-            $url .= ':' . $urlParts['port'];
-        }
-        
-        if (isset($urlParts['path'])) {
-            $url .= $urlParts['path'];
-        }
-        
-        if (isset($urlParts['query'])) {
-            $url .= '?' . $urlParts['query'];
-        }
-        
-        if (isset($urlParts['fragment'])) {
-            $url .= '#' . $urlParts['fragment'];
-        }
-        
-        return $url;
+        return http_build_url($urlParts);
     }
 }
