@@ -77,7 +77,7 @@ class RouteManagerTest extends \PHPUnit_Framework_TestCase
     
         $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
         
-        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->removeRoute('test|route');
         
         $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }
@@ -96,8 +96,8 @@ class RouteManagerTest extends \PHPUnit_Framework_TestCase
     
         $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
     
-        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
-        $this->routeManager->removeRoute('test|route', '\\Test\\Handler');
+        $this->routeManager->removeRoute('test|route');
+        $this->routeManager->removeRoute('test|route');
     
         $this->assertFalse($this->routeManager->getEventNameForRoute($this->request));
     }

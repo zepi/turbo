@@ -6,7 +6,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->requestAbstract = $this->getMockBuilder('\\Zepi\\Turbo\\Request\\RequestAbstract')
+        $this->requestAbstract = $this->getMockBuilder('\\Zepi\\Turbo\\Request\\WebRequest')
                                        ->disableOriginalConstructor()
                                        ->getMock();
         
