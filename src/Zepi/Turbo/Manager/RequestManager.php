@@ -221,7 +221,6 @@ class RequestManager
      */
     protected function getScheme()
     {
-        $scheme = '';
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $scheme = $_SERVER['REQUEST_SCHEME'];
         } else if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {

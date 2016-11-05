@@ -130,11 +130,10 @@ class RouteManager
      * 
      * @access public
      * @param string $route
-     * @param string $eventName
      * @param integer $priority
      * @return boolean
      */
-    public function removeRoute($route, $eventName, $priority = 50)
+    public function removeRoute($route, $priority = 50)
     {
         // If the priority isn't existing we return at this point
         if (!isset($this->routes[$priority])) {

@@ -35,7 +35,8 @@
 
 namespace Zepi\Turbo\Response;
 
-use Zepi\Turbo\Request\RequestAbstract;
+use \Zepi\Turbo\Request\RequestAbstract;
+use \Zepi\Turbo\Request\WebRequest;
 
 /**
  * The Response holds all information which are outputtet at the end
@@ -217,6 +218,10 @@ class Response
      */
     public function redirectTo($target, $headerCode = 301, $withOrigin = false)
     {
+        if (!($this->request instanceof WebRequest)) {
+            return;
+        }
+        
         if (strpos($target, 'http://') === false) {
             $target = $this->request->getFullRoute($target);
         }
@@ -226,6 +231,10 @@ class Response
             $additionalQuery = '_origin=' . base64_encode($origin);
             
             $parts = parse_url($target);
+            
+            if ($parts === false) {
+                return;
+            }
             
             if (!isset($parts['query'])) {
                 $parts['query'] = '';
@@ -249,6 +258,10 @@ class Response
      */
     public function sendHeader($message, $code = null)
     {
+        if (!($this->request instanceof WebRequest)) {
+            return;
+        }
+        
         if ($code !== null) {
             header($message, true, $code);
         } else {
@@ -265,6 +278,10 @@ class Response
      */
     public function sendHttpStatus($code, $resetOutput = false)
     {
+        if (!($this->request instanceof WebRequest)) {
+            return;
+        }
+        
         $codes = array(
             100 => 'Continue',
             101 => 'Switching Protocols',
