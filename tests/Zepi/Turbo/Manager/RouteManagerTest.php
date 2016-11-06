@@ -181,4 +181,23 @@ class RouteManagerTest extends \PHPUnit_Framework_TestCase
     
         $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
     }
+    
+    public function testRouteWithNamedRouteParameters()
+    {
+        $this->request->expects($this->any())
+            ->method('getRoute')
+            ->will($this->returnValue('test 2 asdf'));
+    
+        $this->request->expects($this->once())
+            ->method('setRouteParams')
+            ->with(array(2, 'asdf', 'id' => 2, 'name' => 'asdf'));
+    
+        $this->fileObjectBackend->expects($this->exactly(1))
+            ->method('saveObject')
+            ->with($this->anything());
+    
+        $this->routeManager->addRoute('test|[d:id]|[s:name]', '\\Test\\Handler');
+    
+        $this->assertEquals('\\Test\\Handler', $this->routeManager->getEventNameForRoute($this->request));
+    }
 }

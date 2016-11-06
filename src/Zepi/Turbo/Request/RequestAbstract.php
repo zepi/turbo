@@ -186,10 +186,15 @@ abstract class RequestAbstract
      * 
      * @access public
      * @param mixed $param
+     * @param string $key
      */
-    public function addRouteParam($param)
+    public function addRouteParam($param, $key = '')
     {
         $this->routeParams[] = $param;
+        
+        if ($key != '') {
+            $this->routeParams[$key]= $param;
+        }
     }
     
     /**
@@ -214,16 +219,16 @@ abstract class RequestAbstract
      * Returns the route param for the given index.
      * 
      * @access public
-     * @param integer $index
+     * @param integer|string $key
      * @return string|boolean
      */
-    public function getRouteParam($index)
+    public function getRouteParam($key)
     {
-        if (!isset($this->routeParams[$index])) {
+        if (!isset($this->routeParams[$key])) {
             return false;
         }
         
-        return $this->routeParams[$index];
+        return $this->routeParams[$key];
     }
     
     /**
@@ -254,10 +259,10 @@ abstract class RequestAbstract
         }
         
         $posPoint = strrpos($routePart, '.');
-        if (substr($routePart, -1) !== '/' && ($posPoint === false || $posPoint < strrpos($routePart, '/'))) {
-            $routePart .= '/';
+        if (substr($routePart, -1) !== $delimiter && ($posPoint === false || $posPoint < strrpos($routePart, $delimiter))) {
+            $routePart .= $delimiter;
         }
-
+        
         return $this->base . $routePart;
     }
     

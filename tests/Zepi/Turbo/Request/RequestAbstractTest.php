@@ -43,16 +43,24 @@ class RequestAbstractTest extends \PHPUnit_Framework_TestCase
         $this->request->addRouteParam('keyOne');
         $this->request->addRouteParam('keyTwo');
         
+        $this->request->addRouteParam('keyThree', 'three');
+        
         $this->assertEquals('keyOne', $this->request->getRouteParam(0));
         $this->assertEquals('keyTwo', $this->request->getRouteParam(1));
+        
+        $this->assertEquals('keyThree', $this->request->getRouteParam(2));
+        $this->assertEquals('keyThree', $this->request->getRouteParam('three'));
     }
     
     public function testSetRouteParams()
     {
-        $this->request->setRouteParams(array('keyThree', 'keyFour'));
+        $this->request->setRouteParams(array('keyThree', 'keyFour', 'keyFive', 'five' => 'keyFive'));
         
         $this->assertEquals('keyThree', $this->request->getRouteParam(0));
         $this->assertEquals('keyFour', $this->request->getRouteParam(1));
+
+        $this->assertEquals('keyFive', $this->request->getRouteParam(2));
+        $this->assertEquals('keyFive', $this->request->getRouteParam('five'));
     }
     
     public function testSetRouteParamWithoutAnArray()
@@ -65,6 +73,7 @@ class RequestAbstractTest extends \PHPUnit_Framework_TestCase
     public function testGetNotExistingRouteParam()
     {
         $this->assertFalse($this->request->getRouteParam(9));
+        $this->assertFalse($this->request->getRouteParam('keyTen'));
     }
     
     public function testGetFullRoute()

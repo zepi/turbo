@@ -219,7 +219,7 @@ class RouteManager
         
         // Split the two routes into parts
         $routeParts = explode($request->getRouteDelimiter(), $route);
-        $targetRouteParts = explode($request->getRouteDelimiter(), trim($request->getRoute(), '/'));
+        $targetRouteParts = explode($request->getRouteDelimiter(), trim($request->getRoute(), $request->getRouteDelimiter()));
         $numberOfTargetRouteParts = count($targetRouteParts);
         
         // If we have different number of parts between the two routes
@@ -229,22 +229,29 @@ class RouteManager
         }
         
         // Define the data types
-        $dataTypes = array('[d]', '[s]');
         $routeParams = array();
+        $routeIndex = 0;
         
         // Loop through the route parts and compare each part
         for ($pos = 0; $pos < $numberOfTargetRouteParts; $pos++) {
             $part = $routeParts[$pos];
             $targetPart = $targetRouteParts[$pos];
 
-            if (in_array($part, $dataTypes) && $targetPart != '') {
-                $routeParams[] = $this->parseRouteParam($part, $targetPart);
+            if ($targetPart != '' && preg_match('/\[(d|s)(?:\:([0-9a-zA-Z]*))?\]/', $part)) {
+                list($key, $value) = $this->parseRouteParam($part, $targetPart);
+                
+                $routeParams[$routeIndex] = $value;
+                $routeIndex++;
+                
+                if ($key !== '') {
+                    $routeParams[$key] = $value;
+                }
             } else if ($part !== $targetPart) {
                 // The part isn't equal == the route can't be equal
                 return false;
             }
         }
-        
+
         // Save the route parameters in the request
         $request->setRouteParams($routeParams);
         
@@ -257,16 +264,25 @@ class RouteManager
      * @access protected
      * @param string $part
      * @param string $targetPart
-     * @return mixed
+     * @return array
      */
     protected function parseRouteParam($part, $targetPart)
     {
+        preg_match('/\[(d|s)(?:\:([0-9a-zA-Z]*))?\]/', $part, $matches);
+
         // If the part is a data type we need this route parameter
-        if ($part === '[d]' && is_numeric($targetPart)) {
+        if ($matches[1] === 'd' && is_numeric($targetPart)) {
             // Transform the value into the correct data type
-            return $targetPart * 1;
-        } else if ($part === '[s]' && is_string($targetPart)) {
-            return $targetPart;
+            $value = $targetPart * 1;
+        } else if ($matches[1] === 's' && is_string($targetPart)) {
+            $value = $targetPart;
         }
+        
+        $key = '';
+        if (isset($matches[2])) {
+            $key = $matches[2];
+        }
+        
+        return [$key, $value];
     }
 }
