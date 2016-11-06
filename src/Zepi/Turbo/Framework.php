@@ -40,6 +40,7 @@ use \Zepi\Turbo\Manager\ModuleManager;
 use \Zepi\Turbo\Manager\RuntimeManager;
 use \Zepi\Turbo\Manager\RouteManager;
 use \Zepi\Turbo\Manager\RequestManager;
+use \Zepi\Turbo\Manager\DependencyInjectionManager;
 use \Zepi\Turbo\Request\RequestAbstract;
 use \Zepi\Turbo\Response\Response;
 use Zepi\Turbo\Manager\Zepi\Turbo\Manager;
@@ -116,6 +117,12 @@ class Framework
     
     /**
      * @access protected
+     * @var \Zepi\Turbo\Manager\DependencyInjectionManager
+     */
+    protected $dependencyInjectionManager;
+    
+    /**
+     * @access protected
      * @var \Zepi\Turbo\Request\RequestAbstract
      */
     protected $request;
@@ -185,6 +192,8 @@ class Framework
     protected function initializeFramework()
     {
         $this->registerAutoloader();
+
+        $this->dependencyInjectionManager = new DependencyInjectionManager($this);
         
         $this->requestManager = new RequestManager($this);
         $this->request = $this->requestManager->buildRequest();
@@ -257,6 +266,17 @@ class Framework
     public function getRequestManager()
     {
         return $this->requestManager;
+    }
+    
+    /**
+     * Returns the DependencyInjectionManager object
+     *
+     * @access public
+     * @return \Zepi\Turbo\Manager\DependencyInjectionManager
+     */
+    public function getDependencyInjectionManager()
+    {
+        return $this->dependencyInjectionManager;
     }
     
     /**
@@ -367,6 +387,18 @@ class Framework
         } else if ($module !== false) {
             throw new Exception('Cannot find the class "' . $className . '"!');
         }
+    }
+    
+    /**
+     * Initiates the given class name
+     * 
+     * @param string $className
+     * @param array $additionalParameters
+     * @return object
+     */
+    public function initiateObject($className, $additionalParameters = array())
+    {
+        return $this->dependencyInjectionManager->initiateObject($className, $additionalParameters);
     }
     
     /**
