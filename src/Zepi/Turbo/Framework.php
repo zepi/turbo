@@ -394,11 +394,12 @@ class Framework
      * 
      * @param string $className
      * @param array $additionalParameters
+     * @param boolean $shared
      * @return object
      */
-    public function initiateObject($className, $additionalParameters = array())
+    public function initiateObject($className, $additionalParameters = array(), $shared = false)
     {
-        return $this->dependencyInjectionManager->initiateObject($className, $additionalParameters);
+        return $this->dependencyInjectionManager->initiateObject($className, $additionalParameters, $shared);
     }
     
     /**

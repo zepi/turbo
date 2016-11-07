@@ -57,6 +57,11 @@ class DependencyInjectionManager
     protected $framework;
     
     /**
+     * @var array
+     */
+    protected $sharedInstances = array();
+    
+    /**
      * Constructs the object
      * 
      * @access public
@@ -72,12 +77,17 @@ class DependencyInjectionManager
      *
      * @param string $className
      * @param array $additionalParameters
+     * @param boolean $shared
      * @return object
      * 
      * @throws \Zepi\Turbo\Exception Cannot find correct value for parameter "{parameterName}" in class "{className}".
      */
-    public function initiateObject($className, $additionalParameters = array())
+    public function initiateObject($className, $additionalParameters = array(), $shared = false)
     {
+        if (isset($this->sharedInstances[$className])) {
+            return $this->sharedInstances[$className];
+        }
+        
         $reflection = new ReflectionClass($className);
         
         if (!$reflection->hasMethod('__construct')) {
@@ -103,7 +113,13 @@ class DependencyInjectionManager
             $parameters[] = $parameterValue;
         }
         
-        return $reflection->newInstanceArgs($parameters);
+        $instance = $reflection->newInstanceArgs($parameters);
+        
+        if ($shared) {
+            $this->sharedInstances[$className] = $instance;
+        }
+        
+        return $instance;
     }
     
     /**
