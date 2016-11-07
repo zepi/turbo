@@ -39,6 +39,7 @@ namespace Zepi\Turbo\Manager;
 use \Zepi\Turbo\Framework;
 use \Zepi\Turbo\Exception;
 use \ReflectionClass;
+use \ReflectionMethod;
 
 /**
  * The DependenyInjectionManager manages the initiation of new
@@ -79,8 +80,6 @@ class DependencyInjectionManager
      * @param array $additionalParameters
      * @param boolean $shared
      * @return object
-     * 
-     * @throws \Zepi\Turbo\Exception Cannot find correct value for parameter "{parameterName}" in class "{className}".
      */
     public function initiateObject($className, $additionalParameters = array(), $shared = false)
     {
@@ -90,36 +89,51 @@ class DependencyInjectionManager
         
         $reflection = new ReflectionClass($className);
         
-        if (!$reflection->hasMethod('__construct')) {
-            return new $className();
+        if ($reflection->hasMethod('__construct')) {
+            $constructor = $reflection->getConstructor();
+            $parameters = $this->prepareParameters($constructor, $additionalParameters);
+            
+            $instance = $reflection->newInstanceArgs($parameters);
+        } else {
+            $instance = new $className();
         }
-        
-        $constructor = $reflection->getConstructor();
-        
-        $parameters = array();
-        foreach ($constructor->getParameters() as $parameter) {
-            $parameterValue = null;
-            
-            if (isset($additionalParameters[$parameter->name])) {
-                $parameterValue = $additionalParameters[$parameter->name];
-            } else if ($parameter->getClass() !== null) {
-                $parameterValue = $this->getInstance($parameter->getClass());
-            } 
-            
-            if ($parameterValue === null) {
-                throw new Exception('Cannot find correct value for parameter "' . $parameter->name . '" in class "' . $className . '".');
-            }
-            
-            $parameters[] = $parameterValue;
-        }
-        
-        $instance = $reflection->newInstanceArgs($parameters);
         
         if ($shared) {
             $this->sharedInstances[$className] = $instance;
         }
         
         return $instance;
+    }
+    
+    /**
+     * Prepares the parameters for the given constructor
+     * 
+     * @param \ReflectionMethod $constructor
+     * @param array $additionalParameters
+     * @return array
+     * 
+     * @throws \Zepi\Turbo\Exception Cannot find correct value for parameter "{parameterName}" in class "{className}". 
+     */
+    protected function prepareParameters(ReflectionMethod $constructor, $additionalParameters)
+    {
+        $parameters = array();
+        foreach ($constructor->getParameters() as $parameter) {
+            $parameterValue = null;
+        
+            if (isset($additionalParameters[$parameter->name])) {
+                $parameterValue = $additionalParameters[$parameter->name];
+            } else if ($parameter->getClass() !== null) {
+                $parameterValue = $this->getInstance($parameter->getClass());
+            }
+        
+            if ($parameterValue === null) {
+                throw new Exception('Cannot find correct value for parameter "' . $parameter->name . '" in class "' . $className . '".');
+            }
+        
+            $parameters[] = $parameterValue;
+        }
+        
+        return $parameters;
     }
     
     /**
