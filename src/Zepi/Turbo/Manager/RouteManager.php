@@ -270,6 +270,8 @@ class RouteManager
     {
         preg_match('/\[(d|s)(?:\:([0-9a-zA-Z]*))?\]/', $part, $matches);
 
+        $value = null;
+        
         // If the part is a data type we need this route parameter
         if ($matches[1] === 'd' && is_numeric($targetPart)) {
             // Transform the value into the correct data type
