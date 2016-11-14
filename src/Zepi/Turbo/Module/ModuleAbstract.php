@@ -96,7 +96,7 @@ abstract class ModuleAbstract
      */
     public function getInstance($className)
     {
-        return new $className();
+        return $this->framework->initiateObject($className);
     }
     
     /**
