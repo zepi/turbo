@@ -220,7 +220,7 @@ abstract class RequestAbstract
      * 
      * @access public
      * @param integer|string $key
-     * @return string|boolean
+     * @return false|mixed
      */
     public function getRouteParam($key)
     {
