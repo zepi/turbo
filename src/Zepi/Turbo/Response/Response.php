@@ -72,6 +72,11 @@ class Response
     protected $output;
     
     /**
+     * @var boolean
+     */
+    protected $outputLocked = false;
+    
+    /**
      * Constructs the object
      * 
      * @access public
@@ -199,13 +204,36 @@ class Response
     
     /**
      * Sets the output of the response.
+     * If $lock is true the output will be locked and the method
+     * will not accept any other output. 
      * 
      * @access public
      * @param string $output
+     * @param boolean $lock
+     * @return boolean
      */
-    public function setOutput($output)
+    public function setOutput($output, $lock = false)
     {
+        if ($this->outputLocked) {
+            return false;
+        }
+        
+        if ($lock) {
+            $this->outputLocked = true;
+        }
+        
         $this->output = $output;
+        return true;
+    }
+    
+    /**
+     * Returns true if the output in the response is locked.
+     * 
+     * @return boolean
+     */
+    public function isOutputLocked()
+    {
+        return ($this->outputLocked);
     }
     
     /**
