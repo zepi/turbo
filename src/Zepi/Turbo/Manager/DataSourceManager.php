@@ -107,18 +107,17 @@ class DataSourceManager
      * Adds a data source to the repository
      * 
      * @access public 
+     * @param string $interfaceName
      * @param string $driver
      * @param string $className
      */
-    public function addDataSource($driver, $className)
+    public function addDataSource($interfaceName, $driver, $className)
     {
-        $typeClass = $this->getTypeClass($className);
-
-        if (!isset($this->dataSources[$typeClass]) || !is_array($this->dataSources[$typeClass])) {
-            $this->dataSources[$typeClass] = array();
+        if (!isset($this->dataSources[$interfaceName]) || !is_array($this->dataSources[$interfaceName])) {
+            $this->dataSources[$interfaceName] = array();
         }
         
-        $this->dataSources[$typeClass][$driver] = $className;
+        $this->dataSources[$interfaceName][$driver] = $className;
         $this->saveDataSources();
         
         return true;
@@ -128,48 +127,21 @@ class DataSourceManager
      * Removes a data source from the repository
      * 
      * @access public
+     * @param stirng $interfaceName
      * @param string $driver
      * @param string $className
      * @return boolean
      */
-    public function removeDataSource($driver, $className)
+    public function removeDataSource($interfaceName, $driver, $className)
     {
-        $typeClass = $this->getTypeClass($className);
-        
-        if (!isset($this->dataSources[$typeClass][$driver])) {
+        if (!isset($this->dataSources[$interfaceName][$driver])) {
             return false;
         }
         
-        unset($this->dataSources[$typeClass][$driver]);
+        unset($this->dataSources[$interfaceName][$driver]);
         $this->saveDataSources();
         
         return true;
-    }
-    
-    /**
-     * Returns the DataSource type class for the given class
-     * 
-     * @access public
-     * @param string $className
-     * @return string
-     * 
-     * @throws \Zepi\Turbo\Exception Data Source "{className}" does not implement the DataSourceInterface.
-     */
-    protected function getTypeClass($className)
-    {
-        $implementedClasses = class_implements($className);
-        $frameworkDataSourceInterface = 'Zepi\\Turbo\\FrameworkInterface\\DataSourceInterface';
-
-        // If the class does not implement the DataSourceInterface we cannot use 
-        // this class as DataSource
-        if (!isset($implementedClasses[$frameworkDataSourceInterface])) {
-            throw new Exception('Data Source "' . $className . '" does not implement the DataSourceInterface.');
-        }
-        
-        // Remove the framework interface
-        unset($implementedClasses[$frameworkDataSourceInterface]);
-        
-        return Framework::prepareClassName(current($implementedClasses));
     }
     
     /**
