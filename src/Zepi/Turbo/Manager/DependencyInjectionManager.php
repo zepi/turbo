@@ -127,7 +127,7 @@ class DependencyInjectionManager
             }
         
             if ($parameterValue === null) {
-                throw new Exception('Cannot find correct value for parameter "' . $parameter->name . '" in class "' . $className . '".');
+                throw new Exception('Cannot find correct value for parameter "' . $parameter->name . '" in class "' . $constructor->class . '".');
             }
         
             $parameters[] = $parameterValue;
