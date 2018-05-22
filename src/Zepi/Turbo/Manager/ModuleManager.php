@@ -394,8 +394,8 @@ class ModuleManager
     {
         $moduleProperties = $this->parseModuleJson($path);
 
-        // If the ini file has no dependencies we have nothing to do...
-        if (!isset($moduleProperties->dependencies) || count($moduleProperties->dependencies) === 0) {
+        // If the config file has no dependencies we have nothing to do...
+        if (!isset($moduleProperties->dependencies) || $moduleProperties->dependencies === null) {
             return;
         }
         
