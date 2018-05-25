@@ -250,7 +250,7 @@ class Response
             return;
         }
         
-        if (strpos($target, 'http://') === false) {
+        if (!preg_match('/http(s?)\:\/\//', $target)) {
             $target = $this->request->getFullRoute($target);
         }
         
